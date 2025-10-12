@@ -1,12 +1,15 @@
 <?php
+/**
+ * File: web/backups.php
+ * Halaman untuk mengelola riwayat backup.
+ * Versi Final & Stabil.
+ */
 require_once __DIR__ . '/../config/db.php';
-require_login();
+require_login(); // Semua pengguna yang login bisa mengakses halaman ini.
 
-$is_admin = (current_user()['role'] ?? '') === 'admin';
-
-// --- LOGIKA HAPUS BACKUP ---
+// --- LOGIKA HAPUS SATU BACKUP ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('action') === 'delete') {
-    if ($is_admin && verify_csrf(post('csrf'))) {
+    if (verify_csrf(post('csrf'))) {
         $backup_id = (int)(post('backup_id') ?? 0);
         if ($backup_id > 0) {
             $stmt = $pdo->prepare("DELETE FROM backups WHERE id = ?");
@@ -18,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('action') === 'delete') {
     }
 }
 
-// --- LOGIKA BULK ACTIONS ---
+// --- LOGIKA AKSI MASSAL (BULK ACTIONS) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('action') === 'bulk_action') {
-    if ($is_admin && verify_csrf(post('csrf'))) {
+    if (verify_csrf(post('csrf'))) {
         $bulk_action = post('bulk_action_type');
         $selected_backups = $_POST['selected_backups'] ?? [];
         
@@ -28,13 +31,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('action') === 'bulk_action') {
             $ids = array_map('intval', $selected_backups);
             $placeholders = str_repeat('?,', count($ids) - 1) . '?';
 
+            // Aksi Hapus Massal
             if ($bulk_action === 'delete') {
                 $stmt = $pdo->prepare("DELETE FROM backups WHERE id IN ($placeholders)");
                 $stmt->execute($ids);
                 app_log('backup_bulk_delete', 'Menghapus ' . count($ids) . ' riwayat backup', current_user()['id']);
                 header("Location: /backups?status=bulk_deleted&count=" . count($ids));
                 exit;
-            } elseif ($bulk_action === 'download' && class_exists('ZipArchive')) {
+            } 
+            // Aksi Download Massal (dalam format ZIP)
+            elseif ($bulk_action === 'download' && class_exists('ZipArchive')) {
                 $stmt = $pdo->prepare("SELECT filename, config FROM backups WHERE id IN ($placeholders)");
                 $stmt->execute($ids);
                 $backups_to_zip = $stmt->fetchAll();
@@ -49,11 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('action') === 'bulk_action') {
                     }
                     $zip->close();
                     
+                    // Kirim file zip ke browser
                     header('Content-Type: application/zip');
                     header('Content-Disposition: attachment; filename="' . $zip_filename . '"');
                     header('Content-Length: ' . filesize($zip_path));
                     readfile($zip_path);
-                    unlink($zip_path);
+                    unlink($zip_path); // Hapus file sementara setelah didownload
                     exit;
                 }
             }
@@ -61,19 +68,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && post('action') === 'bulk_action') {
     }
 }
 
-// --- LOGIKA FILTER, SORT, DAN LIMIT ---
+// --- LOGIKA FILTER, PENGURUTAN, DAN LIMIT ---
 $search = get('search') ?? '';
 $device_id = (int)(get('device_id') ?? 0);
 $sort_by = get('sort') ?? 'timestamp';
 $order = get('order') ?? 'desc';
 $limit = in_array((int)(get('limit') ?? 50), [25, 50, 100, 200, 500]) ? (int)(get('limit') ?? 50) : 50;
 
+// Validasi parameter pengurutan untuk keamanan
 $allowed_sort = ['timestamp', 'device_name', 'status'];
 $allowed_order = ['asc', 'desc'];
 if (!in_array($sort_by, $allowed_sort)) $sort_by = 'timestamp';
 if (!in_array($order, $allowed_order)) $order = 'desc';
 $order_by_clause = "ORDER BY {$sort_by} {$order}";
 
+// Persiapan query utama untuk mengambil data backup
 $sql = "SELECT b.*, d.name AS device_name, d.ip 
         FROM backups b 
         JOIN devices d ON d.id=b.device_id 
@@ -90,7 +99,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $rows = $stmt->fetchAll();
 
-// Helper function untuk generate link sorting
+// Fungsi helper untuk membuat link pengurutan di header tabel
 function sort_link($column, $text, $current_sort, $current_order) {
     $order = ($current_sort === $column && $current_order === 'asc') ? 'desc' : 'asc';
     $params = http_build_query(array_merge($_GET, ['sort' => $column, 'order' => $order]));
@@ -107,6 +116,7 @@ include __DIR__ . '/includes/header.php';
   <p class="page-subtitle">Cari, urutkan, dan kelola semua riwayat backup perangkat.</p>
 </div>
 
+<!-- Formulir Filter -->
 <div class="form-container" style="max-width: none; margin-bottom: 24px;">
     <form method="get">
         <div class="filter-form" style="display: flex; gap: 12px; align-items: flex-end;">
@@ -143,10 +153,10 @@ include __DIR__ . '/includes/header.php';
     </form>
 </div>
 
+<!-- Kontainer Tabel -->
 <div class="table-container">
   <div class="table-header">
     <h2 class="table-title">Riwayat (<?php echo count($rows); ?> ditemukan)</h2>
-    <?php if ($is_admin): ?>
     <div class="bulk-actions">
       <button onclick="bulkAction('delete')" class="btn btn-sm danger" disabled id="bulk-delete-btn">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
@@ -157,13 +167,12 @@ include __DIR__ . '/includes/header.php';
         <span>Download</span>
       </button>
     </div>
-    <?php endif; ?>
   </div>
+  <!-- Formulir tersembunyi untuk bulk actions -->
   <form id="bulk-form" method="post">
     <input type="hidden" name="action" value="bulk_action">
     <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(csrf_token()); ?>">
     <input type="hidden" name="bulk_action_type" id="bulk-action-type">
-    <!-- Checkbox values will be appended here by JS -->
   </form>
   
   <?php if (empty($rows)): ?>
@@ -173,13 +182,13 @@ include __DIR__ . '/includes/header.php';
             <polyline points="13 2 13 9 20 9"></polyline>
         </svg>
         <h3 style="margin-top: 16px; font-size: 18px; color: var(--color-text-header);">Tidak Ada Riwayat Ditemukan</h3>
-        <p style="color: var(--color-text-muted); max-width: 400px; margin: 8px auto 0;">Tidak ada data yang cocok dengan kriteria filter Anda. Coba reset filter untuk melihat semua riwayat.</p>
+        <p style="color: var(--color-text-muted); max-width: 400px; margin: 8px auto 0;">Tidak ada data yang cocok dengan kriteria filter Anda.</p>
     </div>
   <?php else: ?>
     <table class="modern-table">
         <thead>
         <tr>
-            <?php if ($is_admin): ?><th width="40"><input type="checkbox" id="select-all-checkbox" title="Pilih Semua"></th><?php endif; ?>
+            <th width="40"><input type="checkbox" id="select-all-checkbox" title="Pilih Semua"></th>
             <?php echo sort_link('timestamp', 'Waktu', $sort_by, $order); ?>
             <?php echo sort_link('device_name', 'Perangkat', $sort_by, $order); ?>
             <?php echo sort_link('status', 'Status', $sort_by, $order); ?>
@@ -190,9 +199,7 @@ include __DIR__ . '/includes/header.php';
         <tbody>
         <?php foreach ($rows as $r): ?>
         <tr>
-            <?php if ($is_admin): ?>
             <td><input type="checkbox" class="backup-checkbox" name="selected_backups[]" value="<?php echo (int)$r['id']; ?>"></td>
-            <?php endif; ?>
             <td><span style="color: var(--color-text-muted); font-size: 14px;"><?php echo date('d M Y, H:i', strtotime($r['timestamp'])); ?></span></td>
             <td>
                 <strong><?php echo htmlspecialchars($r['device_name']); ?></strong><br>
@@ -214,15 +221,12 @@ include __DIR__ . '/includes/header.php';
                     <?php if ($r['status'] === 'success'): ?>
                         <a class="btn btn-sm" href="/download?id=<?php echo (int)$r['id']; ?>">Download</a>
                     <?php endif; ?>
-                    
-                    <?php if ($is_admin): ?>
                     <form method="POST" onsubmit="return confirm('Anda yakin ingin menghapus backup ini?');" style="display: inline;">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="backup_id" value="<?php echo (int)$r['id']; ?>">
                         <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(csrf_token()); ?>">
                         <button type="submit" class="btn btn-sm danger" title="Hapus Backup">Hapus</button>
                     </form>
-                    <?php endif; ?>
                 </div>
             </td>
         </tr>
@@ -233,6 +237,7 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <script>
+// Script untuk fungsionalitas checkbox dan bulk actions
 document.addEventListener('DOMContentLoaded', function() {
     const selectAllCheckbox = document.getElementById('select-all-checkbox');
     const itemCheckboxes = document.querySelectorAll('.backup-checkbox');
@@ -262,38 +267,27 @@ document.addEventListener('DOMContentLoaded', function() {
             updateBulkButtons();
         });
     });
-
-    // Initial check
     updateBulkButtons();
 });
 
 function bulkAction(action) {
     const form = document.getElementById('bulk-form');
-    // Clear previous selections from the form
     form.innerHTML = '';
-    
-    // Add back the static hidden inputs
     form.insertAdjacentHTML('beforeend', `
         <input type="hidden" name="action" value="bulk_action">
         <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(csrf_token()); ?>">
         <input type="hidden" name="bulk_action_type" id="bulk-action-type">
     `);
-
     const checkedCheckboxes = document.querySelectorAll('.backup-checkbox:checked');
-    
     if (checkedCheckboxes.length === 0) {
         alert('Pilih minimal satu backup untuk melakukan aksi ini.');
         return;
     }
-    
     const actionText = action === 'delete' ? 'menghapus' : 'mendownload';
     if (!confirm(`Anda yakin ingin ${actionText} ${checkedCheckboxes.length} backup yang dipilih?`)) {
         return;
     }
-    
     document.getElementById('bulk-action-type').value = action;
-    
-    // Append checked checkboxes to the form for submission
     checkedCheckboxes.forEach(checkbox => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -301,9 +295,9 @@ function bulkAction(action) {
         input.value = checkbox.value;
         form.appendChild(input);
     });
-    
     form.submit();
 }
 </script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
+

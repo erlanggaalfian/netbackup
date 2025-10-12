@@ -1,11 +1,14 @@
 <?php
+/**
+ * File: web/schedule.php
+ * Halaman untuk mengelola jadwal backup otomatis.
+ * Versi Final & Stabil.
+ */
 require_once __DIR__ . '/../config/db.php';
-require_login();
+require_login(); // Semua pengguna yang login bisa mengakses halaman ini.
 
-$is_admin = (current_user()['role'] ?? '') === 'admin';
-
-// --- LOGIKA SIMPAN JADWAL ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $is_admin) {
+// --- LOGIKA SIMPAN PERUBAHAN JADWAL ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (verify_csrf(post('csrf'))) {
         $device_id = (int)(post('device_id') ?? 0);
         $schedule = post('schedule');
@@ -13,29 +16,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $is_admin) {
         $run_day = (int)(post('run_day') ?? 1);
         $active = (int)(post('active') ?? 0);
 
+        // Validasi input sebelum menyimpan ke database
         if ($device_id > 0 && in_array($schedule, ['daily', 'weekly', 'monthly']) && $run_hour >= 0 && $run_hour <= 23 && $run_day >= 1 && $run_day <= 28) {
+            // Menggunakan "ON DUPLICATE KEY UPDATE" untuk menyederhanakan logika insert/update
             $sql = "INSERT INTO settings (device_id, schedule, run_hour, run_day, active) 
                     VALUES (?, ?, ?, ?, ?) 
                     ON DUPLICATE KEY UPDATE schedule=VALUES(schedule), run_hour=VALUES(run_hour), run_day=VALUES(run_day), active=VALUES(active)";
             
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$device_id, $schedule, $run_hour, $run_day, $active]);
-
             app_log('schedule_update', "Jadwal diperbarui untuk device id={$device_id}", current_user()['id'], $device_id);
-            
             header('Location: /schedule?status=success');
             exit;
         }
     }
 }
 
-// --- LOGIKA FILTER & PENCARIAN ---
+// --- LOGIKA FILTER DAN PENCARIAN ---
 $search = get('search') ?? '';
 $schedule_filter = get('schedule_filter') ?? '';
 $status_filter = get('status_filter') ?? '';
 $limit = in_array((int)(get('limit') ?? 50), [25, 50, 100, 200]) ? (int)(get('limit') ?? 50) : 50;
 
-// --- AMBIL DATA PERANGKAT ---
+// Persiapan query utama untuk mengambil data jadwal dan status backup terakhir
 $sql = "
     SELECT 
         d.id, d.name, d.ip, 
@@ -60,12 +63,10 @@ if (in_array($schedule_filter, ['daily', 'weekly', 'monthly'])) {
     $sql .= " AND s.schedule = ?";
     $params[] = $schedule_filter;
 }
-
 if ($status_filter !== '' && in_array((int)$status_filter, [0, 1])) {
     $sql .= " AND s.active = ?";
     $params[] = (int)$status_filter;
 }
-
 $sql .= " ORDER BY d.name LIMIT " . $limit;
 
 $stmt = $pdo->prepare($sql);
@@ -83,6 +84,7 @@ include __DIR__ . '/includes/header.php';
   </div>
 </div>
 
+<!-- Formulir Filter -->
 <div class="form-container form-container-full-width">
     <form method="get">
         <div class="filter-form flex-gap">
@@ -124,6 +126,7 @@ include __DIR__ . '/includes/header.php';
     </form>
 </div>
 
+<!-- Kontainer Tabel -->
 <div class="table-container">
   <div class="table-header">
     <h2 class="table-title">Pengaturan Jadwal (Menampilkan <?php echo count($devices); ?> perangkat)</h2>
@@ -138,9 +141,7 @@ include __DIR__ . '/includes/header.php';
         <th>Tanggal (Bulanan)</th>
         <th>Status</th>
         <th>Backup Terakhir</th>
-        <?php if ($is_admin): ?>
         <th>Aksi</th>
-        <?php endif; ?>
       </tr>
     </thead>
     <tbody>
@@ -155,14 +156,14 @@ include __DIR__ . '/includes/header.php';
               <small class="small-text-muted"><?php echo htmlspecialchars($r['ip']); ?></small>
             </td>
             <td>
-              <select name="schedule" class="schedule-select" <?php if (!$is_admin) echo 'disabled'; ?>>
+              <select name="schedule" class="schedule-select">
                 <option value="daily" <?php if (($r['schedule'] ?? 'daily') === 'daily') echo 'selected'; ?>>Harian</option>
                 <option value="weekly" <?php if (($r['schedule'] ?? '') === 'weekly') echo 'selected'; ?>>Mingguan</option>
                 <option value="monthly" <?php if (($r['schedule'] ?? '') === 'monthly') echo 'selected'; ?>>Bulanan</option>
               </select>
             </td>
             <td>
-              <select name="run_hour" <?php if (!$is_admin) echo 'disabled'; ?>>
+              <select name="run_hour">
                 <?php for ($i = 0; $i < 24; $i++): ?>
                   <option value="<?php echo $i; ?>" <?php if ((int)($r['run_hour'] ?? 2) === $i) echo 'selected'; ?>>
                     <?php echo str_pad((string)$i, 2, '0', STR_PAD_LEFT); ?>:00
@@ -171,10 +172,10 @@ include __DIR__ . '/includes/header.php';
               </select>
             </td>
             <td class="run-day-cell">
-               <input type="number" name="run_day" min="1" max="28" value="<?php echo (int)($r['run_day'] ?? 1); ?>" <?php if (!$is_admin) echo 'disabled'; ?>>
+               <input type="number" name="run_day" min="1" max="28" value="<?php echo (int)($r['run_day'] ?? 1); ?>">
             </td>
             <td>
-              <select name="active" <?php if (!$is_admin) echo 'disabled'; ?>>
+              <select name="active">
                   <option value="1" <?php if ((int)($r['active'] ?? 1) === 1) echo 'selected'; ?>>Aktif</option>
                   <option value="0" <?php if ((int)($r['active'] ?? 1) === 0) echo 'selected'; ?>>Nonaktif</option>
               </select>
@@ -188,11 +189,9 @@ include __DIR__ . '/includes/header.php';
                 <span class="badge gray">Belum ada</span>
               <?php endif; ?>
             </td>
-            <?php if ($is_admin): ?>
             <td>
               <button class="btn btn-sm" type="submit">Simpan</button>
             </td>
-            <?php endif; ?>
           </form>
         </tr>
       <?php endforeach; ?>
@@ -201,6 +200,7 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <script>
+// Script untuk menampilkan/menyembunyikan input tanggal (khusus jadwal bulanan)
 document.addEventListener('DOMContentLoaded', function() {
     function toggleRunDayInput(row) {
         const select = row.querySelector('.schedule-select');
@@ -214,10 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const rows = document.querySelectorAll('.schedule-row');
     rows.forEach(row => {
-        // Initial check on page load
         toggleRunDayInput(row);
-        
-        // Add event listener for changes
         const select = row.querySelector('.schedule-select');
         select.addEventListener('change', function() {
             toggleRunDayInput(row);
@@ -227,3 +224,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
+
