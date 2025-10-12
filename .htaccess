@@ -1,0 +1,57 @@
+# NetBackup .htaccess (Versi Final & Stabil)
+# File ini mengontrol rewrite URL dan keamanan dasar.
+
+# Arahkan permintaan direktori root ke /web/index.php
+DirectoryIndex web/index.php
+
+# Nonaktifkan directory listing
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+
+    # Aktifkan mesin rewrite
+    RewriteEngine On
+
+    # Tentukan basis URL
+    RewriteBase /
+
+    # ------------------------------------------------------
+    # BAGIAN 1: Hapus Trailing Slash
+    # ------------------------------------------------------
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)/$ /$1 [R=301,L]
+
+    # ------------------------------------------------------
+    # BAGIAN 2: Pengecualian Aset
+    # ------------------------------------------------------
+    # Aturan ini memastikan file dan direktori yang ada secara fisik (seperti gambar, css) tidak di-rewrite.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # ------------------------------------------------------
+    # BAGIAN 3: Redirect Eksternal (Membersihkan URL di Browser)
+    # ------------------------------------------------------
+
+    # 3a: /web/halaman → /halaman
+    RewriteCond %{THE_REQUEST} \s/web/([^\s]+) [NC]
+    RewriteRule ^web/(.*)$ /$1 [R=301,L]
+
+    # 3b: Hilangkan ekstensi .php dari URL
+    RewriteCond %{THE_REQUEST} \s/([^/]+)\.php [NC]
+    RewriteRule ^(.*)\.php$ /$1 [R=301,L]
+
+    # ------------------------------------------------------
+    # BAGIAN 4: Rewrite Internal (Menayangkan Konten)
+    # ------------------------------------------------------
+
+    # 4a: Root → web/index.php
+    # Aturan ini sekarang menjadi cadangan jika DirectoryIndex tidak didukung/di-override.
+    RewriteRule ^$ web/index.php [L]
+
+    # 4b: Semua URL bersih → file PHP di /web/
+    # Contoh: permintaan ke example.com/dashboard akan melayani /var/www/netbackup/web/dashboard.php
+    RewriteCond %{DOCUMENT_ROOT}/web%{REQUEST_URI}.php -f
+    RewriteRule ^(.*)$ web/$1.php [L]
+
+</IfModule>

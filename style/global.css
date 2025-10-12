@@ -1,0 +1,287 @@
+/**
+ * =================================================================
+ * NetBackup Global CSS (Versi Final)
+ * =================================================================
+ * File ini berisi semua gaya yang dibutuhkan untuk aplikasi NetBackup.
+ * Menggabungkan palet warna modern, bayangan dinamis, dan struktur
+ * yang rapi untuk tampilan dan kemudahan pemeliharaan terbaik.
+ *
+ * @author Erlangga Alfian
+ * @version Final
+ */
+
+/* =================================================================
+   1. PALET WARNA & VARIABEL UTAMA
+   =================================================================
+   Pusat kendali tema aplikasi. Ubah nilai di sini untuk mengganti
+   tampilan secara global.
+*/
+:root {
+  /* -- WARNA PRIMER (Aksen Utama) -- */
+  --color-primary: #3081d1;
+  --color-primary-hover: #2a72bb;
+  --color-primary-light: #4b91db;
+  --color-primary-text: #ffffff;
+
+  /* -- WARNA SEKUNDER (Elemen Pendukung) -- */
+  --color-secondary-bg: #eaf1ff;
+  --color-secondary-hover: #dce7ff;
+  --color-secondary-text: #375a9a;
+
+  /* -- WARNA TEKS -- */
+  --color-text-header: #1e293b;
+  --color-text-body: #334155;
+  --color-text-muted: #64748b;
+  --color-text-link: #3081d1;
+  --color-text-white: #ffffff;
+
+  /* -- WARNA LATAR BELAKANG (BACKGROUND) -- */
+  --color-bg-body: #f4f7f9;
+  --color-bg-content: #ffffff;
+  --color-bg-hover: #f8fafc;
+
+  /* -- WARNA STATUS (SUCCESS, DANGER, INFO, WARNING) -- */
+  --color-success: #10b981;
+  --color-success-bg: #d1fae5;
+  --color-success-text: #047857;
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-danger-bg: #fee2e2;
+  --color-danger-text: #991b1b;
+  --color-info-bg: #e0f2fe;
+  --color-info-text: #0284c7;
+  --color-warning-bg: #fef9c3;
+  --color-warning-text: #a16207;
+
+  /* -- WARNA BADGE SPESIFIK -- */
+  --color-badge-gray-bg: #e2e8f0;
+  --color-badge-gray-text: #475569;
+
+  /* -- WARNA UI LAIN-LAIN -- */
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e1;
+  --color-code-bg: #f1f5f9;
+  --color-modal-overlay: rgba(15, 23, 42, 0.5);
+  --color-disabled: #94a3b8;
+
+  /* -- WARNA TRANSPARAN UNTUK NAVBAR & LOGIN -- */
+  --color-white-t-80: rgba(255, 255, 255, 0.8);
+  --color-white-t-50: rgba(255, 255, 255, 0.5);
+  --color-white-t-30: rgba(255, 255, 255, 0.3);
+  --color-white-t-10: rgba(255, 255, 255, 0.1);
+
+  /* -- TEMA UNTUK CODE VIEWER -- */
+  --color-code-viewer-bg: #282c34;
+  --color-code-viewer-text: #abb2bf;
+
+  /* -- FONT -- */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Menlo', 'Courier New', monospace;
+
+  /* -- BAYANGAN (SHADOW) -- */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-ring: 0 0 0 3px rgba(48, 129, 209, 0.2); /* Bayangan 'cincin' untuk focus */
+}
+
+/* =================================================================
+   2. RESET & GAYA DASAR
+   ================================================================= */
+* { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padding: 0; font-family: var(--font-sans); background-color: var(--color-bg-body); color: var(--color-text-body); }
+
+/* =================================================================
+   3. LAYOUT & KOMPONEN UTAMA
+   ================================================================= */
+
+/* --- Navbar --- */
+.navbar { background-color: var(--color-primary); height: 65px; position: sticky; top: 0; z-index: 1000; width: 100%; box-shadow: var(--shadow); }
+.navbar-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 100%; padding: 0 24px; }
+.navbar-brand .brand-link { text-decoration: none; display: flex; align-items: center; gap: 12px; }
+.navbar-brand .brand-name { color: var(--color-primary-text); font-weight: 700; font-size: 20px; }
+.navbar-img-logo { height: 32px; width: auto; }
+.navbar-menu { display: flex; align-items: center; gap: 4px; }
+.nav-link { color: var(--color-white-t-80); text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 14px; transition: all 0.2s ease-in-out; }
+.nav-link:hover { background-color: var(--color-primary-hover); color: var(--color-text-white); }
+.nav-link.active { color: var(--color-text-white); font-weight: 600; background-color: var(--color-white-t-10); }
+.nav-separator { height: 20px; width: 1px; background-color: var(--color-white-t-30); margin: 0 12px; }
+.navbar-user { display: flex; align-items: center; gap: 16px; }
+.user-welcome { font-size: 14px; color: var(--color-white-t-80); }
+.user-welcome strong { color: var(--color-text-white); font-weight: 600; }
+.navbar-user .btn.secondary { background: transparent; color: var(--color-text-white); border-color: var(--color-white-t-50); }
+.navbar-user .btn.secondary:hover { background: var(--color-white-t-10); border-color: var(--color-text-white); }
+
+/* --- Container & Header Halaman --- */
+.container { flex-grow: 1; width: 100%; max-width: 1280px; margin: 24px auto; padding: 0 24px; }
+.page-header { border-bottom: 1px solid var(--color-border); padding-bottom: 24px; margin-bottom: 32px; }
+.page-header-flex { display: flex; justify-content: space-between; align-items: center; }
+.page-title { font-size: 28px; font-weight: 800; color: var(--color-text-header); margin: 0; letter-spacing: -0.5px; }
+.page-subtitle { color: var(--color-text-muted); margin: 4px 0 0 0; font-size: 16px; max-width: 700px; }
+
+/* --- Footer --- */
+.footer { width: 100%; padding: 32px 24px; background-color: var(--color-bg-body); border-top: 1px solid var(--color-border); flex-shrink: 0; margin-top: auto; }
+.footer-content { max-width: 1280px; margin: 0 auto; text-align: center; font-size: 14px; color: var(--color-text-muted); }
+.footer-content p { margin: 0; }
+.footer-text strong { color: var(--color-text-body); }
+
+/* =================================================================
+   4. KOMPONEN UI UMUM (Tombol, Badge, Alert)
+   ================================================================= */
+
+/* --- Tombol (Buttons) --- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border: 1px solid transparent; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s ease; background: var(--color-primary); color: var(--color-primary-text); }
+.btn:hover { background: var(--color-primary-hover); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.btn:disabled { background-color: var(--color-disabled); cursor: not-allowed; opacity: 0.7; box-shadow: none; transform: none; }
+.btn.secondary { background: var(--color-bg-content); color: var(--color-text-body); border-color: var(--color-border); }
+.btn.secondary:hover { background: var(--color-bg-hover); border-color: var(--color-border-hover); }
+.btn.danger { background: var(--color-danger); color: var(--color-primary-text); border-color: transparent; }
+.btn.danger:hover { background: var(--color-danger-hover); }
+.btn.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn.btn-lg { padding: 12px 20px; font-size: 16px; }
+
+/* Kelompok Tombol */
+.action-buttons { display: flex; align-items: center; gap: 8px; }
+.action-buttons.mt-1 { margin-top: 12px; }
+.action-buttons.mt-2 { margin-top: 20px; }
+.action-buttons.mt-3 { margin-top: 24px; }
+.action-buttons .inline { display: inline; }
+
+/* --- Badge --- */
+.badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge.blue { background: var(--color-info-bg); color: var(--color-info-text); }
+.badge.gray { background: var(--color-badge-gray-bg); color: var(--color-badge-gray-text); }
+.badge.success { background: var(--color-success-bg); color: var(--color-success-text); }
+.badge.danger { background: var(--color-danger-bg); color: var(--color-danger-text); }
+
+/* --- Alert / Notifikasi --- */
+.alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; border: 1px solid transparent; box-shadow: var(--shadow); }
+.alert.error { background-color: var(--color-danger-bg); color: var(--color-danger-text); border-color: var(--color-danger); }
+.alert.success { background-color: var(--color-success-bg); color: var(--color-success-text); border-color: var(--color-success); }
+.alert.info { background-color: var(--color-info-bg); color: var(--color-info-text); border-color: var(--color-info-text); }
+.alert.warning { background-color: var(--color-warning-bg); color: var(--color-warning-text); border-color: #facc15; }
+
+/* =================================================================
+   5. FORMULIR & TABEL
+   ================================================================= */
+
+/* --- Card Container untuk Form & Tabel --- */
+.form-container, .table-container { background: var(--color-bg-content); border-radius: 12px; border: 1px solid var(--color-border); box-shadow: var(--shadow); margin-bottom: 32px; transition: all 0.2s ease-in-out; }
+.form-container:hover, .table-container:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.form-container { padding: 24px; }
+.form-container-max-width { max-width: 700px; }
+.form-container-no-margin { margin: 0; }
+.form-container-full-width { max-width: none; }
+.table-container { overflow: hidden; }
+
+/* --- Elemen Formulir --- */
+.form-title { font-size: 20px; font-weight: 600; margin: 0 0 20px 0; color: var(--color-text-header); }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 14px; font-weight: 500; color: var(--color-text-header); margin-bottom: 6px; }
+.field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; background-color: var(--color-bg-body); font-family: var(--font-sans); transition: all 0.2s ease; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: var(--shadow-ring); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+
+/* --- Formulir Filter (Rapi ke Samping) --- */
+.filter-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.filter-form .field { flex-grow: 1; min-width: 150px; margin-bottom: 0; }
+.filter-form .field.field-grow { flex-grow: 3; }
+.filter-form label { display: none; }
+.filter-form input, .filter-form select { padding: 10px 12px; }
+.filter-form .action-buttons { flex-shrink: 0; }
+
+/* --- Tabel Modern --- */
+.table-header { display: flex; justify-content: space-between; align-items: center; background: var(--color-bg-hover); padding: 16px 24px; border-bottom: 1px solid var(--color-border); }
+.table-title { font-size: 18px; font-weight: 600; color: var(--color-text-header); margin: 0; }
+.modern-table { width: 100%; border-collapse: collapse; }
+.modern-table th { background: var(--color-bg-hover); padding: 12px 24px; text-align: left; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border); }
+.modern-table td { padding: 16px 24px; border-bottom: 1px solid var(--color-border); font-size: 14px; vertical-align: middle; }
+.modern-table tbody tr:last-child td { border-bottom: none; }
+.modern-table tbody tr:hover { background: var(--color-bg-hover); }
+.modern-table th.sortable a { color: inherit; text-decoration: none; display: flex; align-items: center; }
+.modern-table th.sortable .sort-arrow { display: inline-block; width: 16px; height: 16px; margin-left: 4px; opacity: 0.3; }
+.modern-table th.sortable.active .sort-arrow { opacity: 1; }
+.modern-table th.sortable.asc .sort-arrow::after { content: '▲'; }
+.modern-table th.sortable.desc .sort-arrow::after { content: '▼'; }
+
+/* =================================================================
+   6. HALAMAN SPESIFIK (Login, Logout, Setup)
+   ================================================================= */
+.auth-page { display: flex; flex-direction: column; align-items: center; justify-content: center; background-image: linear-gradient(135deg, var(--color-primary-light), var(--color-primary)); min-height: 100vh; padding: 20px; }
+.login-container, .logout-container { background: var(--color-bg-content); color: var(--color-text-body); border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: var(--shadow-xl); text-align: center; }
+.logout-icon { font-size: 48px; margin-bottom: 16px; }
+.logout-title { font-size: 24px; font-weight: 700; color: var(--color-text-header); margin-bottom: 8px; }
+.logout-text { color: var(--color-text-body); margin: 0; }
+.logo-section { margin-bottom: 32px; }
+.logo-title { font-size: 32px; font-weight: 800; color: var(--color-text-header); margin: 0 0 4px 0; }
+.logo-subtitle { font-size: 12px; font-weight: 600; color: var(--color-text-muted); letter-spacing: 1px; margin: 0; }
+.error-message { background-color: var(--color-danger-bg); border: 1px solid var(--color-danger); color: var(--color-danger-text); padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 24px; font-size: 14px; }
+.form-group { margin-bottom: 20px; text-align: left; }
+.form-label { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; margin-bottom: 8px; color: var(--color-text-header); }
+.form-icon { width: 16px; height: 16px; color: var(--color-text-muted); }
+.form-input { width: 100%; padding: 12px 16px; border-radius: 8px; font-size: 14px; background-color: var(--color-bg-body); color: var(--color-text-body); border: 1px solid var(--color-border); }
+.form-input::placeholder { color: var(--color-text-muted); opacity: 1; }
+.password-container { position: relative; }
+.password-container .form-input { padding-right: 40px; }
+.password-toggle { position: absolute; right: 0; top: 0; height: 100%; width: 40px; background: transparent; border: none; cursor: pointer; color: var(--color-text-muted); display: flex; align-items: center; justify-content: center;}
+.form-options { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 24px; }
+.remember-me { display: flex; align-items: center; gap: 6px; }
+.forgot-password { color: var(--color-text-link); text-decoration: none; }
+.forgot-password:hover { text-decoration: underline; }
+.login-btn { width: 100%; font-size: 16px; padding: 12px; font-weight: 700; }
+.auth-page .footer-text { margin-top: 24px; color: var(--color-text-white); font-size: 14px; text-align: center; }
+
+/* =================================================================
+   7. KOMPONEN SPESIFIK (Modal, Config Viewer, dll)
+   ================================================================= */
+.modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: var(--color-modal-overlay); align-items: center; justify-content: center; }
+.modal-content { background-color: var(--color-bg-content); border-radius: 8px; box-shadow: var(--shadow-lg); max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--color-border); }
+.modal-header h3 { margin: 0; color: var(--color-text-header); }
+.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-muted); }
+.modal-body { padding: 24px; }
+.badge-notes { background-color: var(--color-info-bg); color: var(--color-info-text); margin-top: 12px; border-color: var(--color-info-text); }
+.badge-notes:hover { background-color: var(--color-secondary-hover); }
+.config-container { position: relative; }
+.copy-btn { position: absolute; top: 16px; right: 16px; z-index: 10; background: var(--color-secondary-bg); color: var(--color-secondary-text); border: 1px solid var(--color-border); }
+.copy-btn.copied { background: var(--color-success-bg); color: var(--color-success-text); }
+.config-viewer { background-color: var(--color-code-viewer-bg); color: var(--color-code-viewer-text); padding: 24px; border-radius: 0 0 12px 12px; max-height: 60vh; overflow-y: auto; }
+#config-content { margin: 0; font-family: var(--font-mono); font-size: 14px; white-space: pre-wrap; word-break: break-all; }
+.status-container { display: flex; flex-direction: column; gap: 4px; }
+.small-text-muted { color: var(--color-text-muted); }
+.table-cell-center { text-align: center; padding: 32px; }
+.user-avatar { width: 32px; height: 32px; background: var(--color-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--color-text-white); font-weight: 600; font-size: 14px; }
+.user-info { display: flex; align-items: center; gap: 12px; }
+.page-404 { text-align: center; padding: 60px; }
+
+/* =================================================================
+   8. DESAIN RESPONSIVE
+   ================================================================= */
+@media (max-width: 1024px) {
+  .navbar-inner, .container, .footer-content { max-width: 100%; }
+}
+
+@media (max-width: 768px) {
+  .navbar-menu, .user-welcome { display: none; }
+  .navbar-inner { padding: 0 16px; }
+  .page-title { font-size: 24px; }
+  .page-subtitle { font-size: 14px; }
+  .container { padding: 0 16px; margin-top: 16px; }
+  .form-grid, .form-grid-layout { grid-template-columns: 1fr; }
+  .action-buttons { flex-wrap: wrap; }
+  .filter-form { flex-direction: column; align-items: stretch; }
+
+  /* Transformasi Tabel menjadi Card List di Mobile */
+  .modern-table { display: block; }
+  .modern-table thead { display: none; }
+  .modern-table tbody, .modern-table tr { display: block; }
+  .modern-table tr { border: 1px solid var(--color-border); border-radius: 8px; margin-bottom: 16px; padding: 8px; }
+  .modern-table td { display: flex; align-items: center; justify-content: space-between; padding: 12px 8px; border-bottom: 1px solid var(--color-border); text-align: right; }
+  .modern-table tr td:last-child { border-bottom: none; }
+  .modern-table td::before { content: attr(data-label); font-weight: 600; text-align: left; margin-right: 16px; color: var(--color-text-header); }
+  .modern-table td:has(strong) { flex-direction: column; align-items: flex-end; gap: 4px; }
+}
