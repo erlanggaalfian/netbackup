@@ -10,37 +10,23 @@
  * @version Final
  */
 
-/* =================================================================
-   1. PALET WARNA & VARIABEL UTAMA
-   =================================================================
-   Pusat kendali tema aplikasi. Ubah nilai di sini untuk mengganti
-   tampilan secara global.
-*/
+/* --- 1. PALET WARNA & VARIABEL UTAMA --- */
 :root {
-  /* -- WARNA PRIMER (Aksen Utama) -- */
   --color-primary: #3081d1;
   --color-primary-hover: #2a72bb;
   --color-primary-light: #4b91db;
   --color-primary-text: #ffffff;
-
-  /* -- WARNA SEKUNDER (Elemen Pendukung) -- */
   --color-secondary-bg: #eaf1ff;
   --color-secondary-hover: #dce7ff;
   --color-secondary-text: #375a9a;
-
-  /* -- WARNA TEKS -- */
   --color-text-header: #1e293b;
   --color-text-body: #334155;
   --color-text-muted: #64748b;
   --color-text-link: #3081d1;
   --color-text-white: #ffffff;
-
-  /* -- WARNA LATAR BELAKANG (BACKGROUND) -- */
   --color-bg-body: #f4f7f9;
   --color-bg-content: #ffffff;
   --color-bg-hover: #f8fafc;
-
-  /* -- WARNA STATUS (SUCCESS, DANGER, INFO, WARNING) -- */
   --color-success: #10b981;
   --color-success-bg: #d1fae5;
   --color-success-text: #047857;
@@ -52,68 +38,35 @@
   --color-info-text: #0284c7;
   --color-warning-bg: #fef9c3;
   --color-warning-text: #a16207;
-
-  /* -- WARNA BADGE SPESIFIK -- */
   --color-badge-gray-bg: #e2e8f0;
   --color-badge-gray-text: #475569;
-
-  /* -- WARNA UI LAIN-LAIN -- */
   --color-border: #e2e8f0;
   --color-border-hover: #cbd5e1;
   --color-code-bg: #f1f5f9;
   --color-modal-overlay: rgba(15, 23, 42, 0.5);
   --color-disabled: #94a3b8;
-
-  /* -- WARNA TRANSPARAN UNTUK NAVBAR & LOGIN -- */
   --color-white-t-80: rgba(255, 255, 255, 0.8);
   --color-white-t-50: rgba(255, 255, 255, 0.5);
   --color-white-t-30: rgba(255, 255, 255, 0.3);
   --color-white-t-10: rgba(255, 255, 255, 0.1);
-
-  /* -- TEMA UNTUK CODE VIEWER -- */
   --color-code-viewer-bg: #282c34;
   --color-code-viewer-text: #abb2bf;
-
-  /* -- FONT -- */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'Menlo', 'Courier New', monospace;
-
-  /* -- BAYANGAN (SHADOW) -- */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-ring: 0 0 0 3px rgba(48, 129, 209, 0.2); /* Bayangan 'cincin' untuk focus */
+  --shadow-ring: 0 0 0 3px rgba(48, 129, 209, 0.2);
 }
 
-/* =================================================================
-   2. RESET & GAYA DASAR
-   ================================================================= */
+/* --- 2. RESET & GAYA DASAR --- */
 * { box-sizing: border-box; }
 html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padding: 0; font-family: var(--font-sans); background-color: var(--color-bg-body); color: var(--color-text-body); }
 
-/* =================================================================
-   3. LAYOUT & KOMPONEN UTAMA
-   ================================================================= */
-
-/* --- Navbar --- */
-.navbar { background-color: var(--color-primary); height: 65px; position: sticky; top: 0; z-index: 1000; width: 100%; box-shadow: var(--shadow); }
-.navbar-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 100%; padding: 0 24px; }
-.navbar-brand .brand-link { text-decoration: none; display: flex; align-items: center; gap: 12px; }
-.navbar-brand .brand-name { color: var(--color-primary-text); font-weight: 700; font-size: 20px; }
-.navbar-img-logo { height: 32px; width: auto; }
-.navbar-menu { display: flex; align-items: center; gap: 4px; }
-.nav-link { color: var(--color-white-t-80); text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 14px; transition: all 0.2s ease-in-out; }
-.nav-link:hover { background-color: var(--color-primary-hover); color: var(--color-text-white); }
-.nav-link.active { color: var(--color-text-white); font-weight: 600; background-color: var(--color-white-t-10); }
-.nav-separator { height: 20px; width: 1px; background-color: var(--color-white-t-30); margin: 0 12px; }
-.navbar-user { display: flex; align-items: center; gap: 16px; }
-.user-welcome { font-size: 14px; color: var(--color-white-t-80); }
-.user-welcome strong { color: var(--color-text-white); font-weight: 600; }
-.navbar-user .btn.secondary { background: transparent; color: var(--color-text-white); border-color: var(--color-white-t-50); }
-.navbar-user .btn.secondary:hover { background: var(--color-white-t-10); border-color: var(--color-text-white); }
+/* --- 3. LAYOUT & KOMPONEN UTAMA --- */
 
 /* --- Container & Header Halaman --- */
 .container { flex-grow: 1; width: 100%; max-width: 1280px; margin: 24px auto; padding: 0 24px; }
@@ -128,9 +81,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 .footer-content p { margin: 0; }
 .footer-text strong { color: var(--color-text-body); }
 
-/* =================================================================
-   4. KOMPONEN UI UMUM (Tombol, Badge, Alert)
-   ================================================================= */
+/* --- 4. KOMPONEN UI UMUM (Tombol, Badge, Alert) --- */
 
 /* --- Tombol (Buttons) --- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border: 1px solid transparent; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s ease; background: var(--color-primary); color: var(--color-primary-text); }
@@ -164,9 +115,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 .alert.info { background-color: var(--color-info-bg); color: var(--color-info-text); border-color: var(--color-info-text); }
 .alert.warning { background-color: var(--color-warning-bg); color: var(--color-warning-text); border-color: #facc15; }
 
-/* =================================================================
-   5. FORMULIR & TABEL
-   ================================================================= */
+/* --- 5. FORMULIR & TABEL --- */
 
 /* --- Card Container untuk Form & Tabel --- */
 .form-container, .table-container { background: var(--color-bg-content); border-radius: 12px; border: 1px solid var(--color-border); box-shadow: var(--shadow); margin-bottom: 32px; transition: all 0.2s ease-in-out; }
@@ -208,9 +157,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 .modern-table th.sortable.asc .sort-arrow::after { content: '▲'; }
 .modern-table th.sortable.desc .sort-arrow::after { content: '▼'; }
 
-/* =================================================================
-   6. HALAMAN SPESIFIK (Login, Logout, Setup)
-   ================================================================= */
+/* --- 6. HALAMAN SPESIFIK (Login, Logout, Setup) --- */
 .auth-page { display: flex; flex-direction: column; align-items: center; justify-content: center; background-image: linear-gradient(135deg, var(--color-primary-light), var(--color-primary)); min-height: 100vh; padding: 20px; }
 .login-container, .logout-container { background: var(--color-bg-content); color: var(--color-text-body); border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: var(--shadow-xl); text-align: center; }
 .logout-icon { font-size: 48px; margin-bottom: 16px; }
@@ -235,9 +182,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 .login-btn { width: 100%; font-size: 16px; padding: 12px; font-weight: 700; }
 .auth-page .footer-text { margin-top: 24px; color: var(--color-text-white); font-size: 14px; text-align: center; }
 
-/* =================================================================
-   7. KOMPONEN SPESIFIK (Modal, Config Viewer, dll)
-   ================================================================= */
+/* --- 7. KOMPONEN SPESIFIK (Modal, Config Viewer, dll) --- */
 .modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: var(--color-modal-overlay); align-items: center; justify-content: center; }
 .modal-content { background-color: var(--color-bg-content); border-radius: 8px; box-shadow: var(--shadow-lg); max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--color-border); }
@@ -258,13 +203,8 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 .user-info { display: flex; align-items: center; gap: 12px; }
 .page-404 { text-align: center; padding: 60px; }
 
-/* =================================================================
-   8. DESAIN RESPONSIVE
-   ================================================================= */
-@media (max-width: 1024px) {
-  .navbar-inner, .container, .footer-content { max-width: 100%; }
-}
-
+/* --- 8. DESAIN RESPONSIVE --- */
+@media (max-width: 1024px) { .navbar-inner, .container, .footer-content { max-width: 100%; } }
 @media (max-width: 768px) {
   .navbar-menu, .user-welcome { display: none; }
   .navbar-inner { padding: 0 16px; }
@@ -274,8 +214,6 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
   .form-grid, .form-grid-layout { grid-template-columns: 1fr; }
   .action-buttons { flex-wrap: wrap; }
   .filter-form { flex-direction: column; align-items: stretch; }
-
-  /* Transformasi Tabel menjadi Card List di Mobile */
   .modern-table { display: block; }
   .modern-table thead { display: none; }
   .modern-table tbody, .modern-table tr { display: block; }
@@ -285,3 +223,30 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
   .modern-table td::before { content: attr(data-label); font-weight: 600; text-align: left; margin-right: 16px; color: var(--color-text-header); }
   .modern-table td:has(strong) { flex-direction: column; align-items: flex-end; gap: 4px; }
 }
+
+/* --- 9. PENYEMPURNAAN NAVBAR INTERAKTIF --- */
+
+/* --- Kontainer Utama Navbar --- */
+.navbar { background-color: var(--color-primary); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 1000; height: 65px; width: 100%; }
+.navbar-inner { display: flex; align-items: center; justify-content: space-between; height: 100%; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+
+/* --- Brand/Logo --- */
+.navbar-brand .brand-link { display: flex; align-items: center; gap: 12px; text-decoration: none; transition: transform 0.2s ease-out; }
+.navbar-brand .brand-link:hover { transform: scale(1.05); }
+.navbar-img-logo { height: 36px; width: auto; }
+.navbar-brand .brand-name { color: var(--color-primary-text); font-weight: 700; font-size: 22px; }
+
+/* --- Menu Navigasi --- */
+.navbar-menu { display: flex; align-items: center; gap: 8px; }
+.nav-link { color: var(--color-white-t-80); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 14px; transition: all 0.2s ease-in-out; position: relative; border-bottom: 2px solid transparent; }
+.nav-link:hover { background-color: var(--color-primary-hover); color: var(--color-text-white); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.nav-link.active { color: var(--color-text-white); font-weight: 600; border-bottom-color: var(--color-text-white); }
+.nav-separator { height: 24px; width: 1px; background-color: var(--color-white-t-30); margin: 0 8px; }
+
+/* --- Area Pengguna --- */
+.navbar-user { display: flex; align-items: center; gap: 16px; }
+.user-welcome { font-size: 14px; color: var(--color-white-t-80); }
+.user-welcome strong { color: var(--color-text-white); font-weight: 600; }
+.logout-btn { background: transparent; color: var(--color-text-white); border: 1px solid var(--color-white-t-50); transition: all 0.2s ease-in-out; }
+.logout-btn:hover { background: var(--color-white-t-10); border-color: var(--color-text-white); transform: translateY(-1px); box-shadow: var(--shadow); }
+

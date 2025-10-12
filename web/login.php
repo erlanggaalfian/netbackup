@@ -50,15 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="auth-page">
 <div class="login-container">
-  <div class="logo-section">
-    <div class="logo-stack">
-      <div class="logo-disk"></div>
-      <div class="logo-disk"></div>
-      <div class="logo-disk"></div>
-    </div>
+<div class="logo-section">
+    <img src="/img/logo.png" alt="NetBackup Logo" style="height: 80px; margin-bottom: 16px;">
     <h1 class="logo-title">NetBackup</h1>
     <p class="logo-subtitle">BACKUP YOUR DEVICES</p>
-  </div>
+</div>
 
   <?php if ($error): ?>
     <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
