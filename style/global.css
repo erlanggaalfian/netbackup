@@ -67,17 +67,21 @@
 html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padding: 0; font-family: var(--font-sans); background-color: var(--color-bg-body); color: var(--color-text-body); }
 
+/* Latar belakang interaktif untuk halaman setelah login */
+#dashboard-interactive-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: var(--color-bg-body); }
+.interactive-bg-page { background-color: transparent; }
+
 /* --- 3. LAYOUT & KOMPONEN UTAMA --- */
 
 /* --- Container & Header Halaman --- */
-.container { flex-grow: 1; width: 100%; max-width: 1280px; margin: 24px auto; padding: 0 24px; }
+.container { position: relative; z-index: 1; flex-grow: 1; width: 100%; max-width: 1280px; margin: 24px auto; padding: 0 24px; }
 .page-header { border-bottom: 1px solid var(--color-border); padding-bottom: 24px; margin-bottom: 32px; }
 .page-header-flex { display: flex; justify-content: space-between; align-items: center; }
 .page-title { font-size: 28px; font-weight: 800; color: var(--color-text-header); margin: 0; letter-spacing: -0.5px; }
 .page-subtitle { color: var(--color-text-muted); margin: 4px 0 0 0; font-size: 16px; max-width: 700px; }
 
 /* --- Footer --- */
-.footer { width: 100%; padding: 32px 24px; background-color: var(--color-bg-body); border-top: 1px solid var(--color-border); flex-shrink: 0; margin-top: auto; }
+.footer { position: relative; z-index: 1; width: 100%; padding: 32px 24px; background-color: var(--color-bg-body); border-top: 1px solid var(--color-border); flex-shrink: 0; margin-top: auto; }
 .footer-content { max-width: 1280px; margin: 0 auto; text-align: center; font-size: 14px; color: var(--color-text-muted); }
 .footer-content p { margin: 0; }
 .footer-text strong { color: var(--color-text-body); }
@@ -160,7 +164,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 
 /* --- 6. HALAMAN SPESIFIK (Login, Logout, Setup) --- */
 .auth-page { display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: var(--color-primary); min-height: 100vh; padding: 20px; }
-.login-container, .logout-container { background: var(--color-bg-content); color: var(--color-text-body); border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: var(--shadow-xl); text-align: center; transform-style: preserve-3d; }
+.login-container, .logout-container { position: relative; z-index: 1; background: var(--color-bg-content); color: var(--color-text-body); border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: var(--shadow-xl); text-align: center; transform-style: preserve-3d; transition: transform 0.2s ease; }
 .logout-icon { font-size: 48px; margin-bottom: 16px; }
 .logout-title { font-size: 24px; font-weight: 700; color: var(--color-text-header); margin-bottom: 8px; }
 .logout-text { color: var(--color-text-body); margin: 0; }
@@ -181,11 +185,8 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 .forgot-password { color: var(--color-text-link); text-decoration: none; }
 .forgot-password:hover { text-decoration: underline; }
 .login-btn { width: 100%; font-size: 16px; padding: 12px; font-weight: 700; transform: translateZ(25px); }
-.auth-page .footer-text { margin-top: 24px; color: var(--color-text-white); font-size: 14px; text-align: center; }
-
-/* --- Gaya untuk latar belakang interaktif --- */
+.auth-page .footer-text { margin-top: 24px; color: var(--color-text-muted); font-size: 14px; text-align: center; }
 #auth-interactive-bg { position: fixed; top: 0; left: 0; z-index: -1; }
-#dashboard-interactive-bg { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100vh; }
 
 
 /* --- 7. KOMPONEN SPESIFIK (Modal, Config Viewer, dll) --- */
@@ -256,7 +257,6 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 .logout-btn { background: transparent; color: var(--color-text-white); border: 1px solid var(--color-white-t-50); transition: all 0.2s ease-in-out; }
 .logout-btn:hover { background: var(--color-white-t-10); border-color: var(--color-text-white); transform: translateY(-1px); box-shadow: var(--shadow); }
 
-
 /* --- 10. INTERACTIVE LOGIN PAGE STYLES --- */
 .auth-page-interactive { display: flex; align-items: center; justify-content: center; background-color: var(--color-primary); overflow: hidden; }
 #interactive-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
@@ -267,3 +267,4 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 .auth-page-interactive .login-container .form-options a, .auth-page-interactive .login-container .form-options label { color: var(--color-text-body); }
 .auth-page-interactive .login-container .logo-title { color: var(--color-text-header); }
 .auth-page-interactive .login-container .logo-subtitle { color: var(--color-text-muted); }
+
