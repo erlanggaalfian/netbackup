@@ -124,9 +124,11 @@ Database **`netbackup_db`** terdiri dari 6 tabel utama:
 
 ### Langkah 1: Unduh Aplikasi & Jalankan Skrip Instalasi
 ```bash
+# Masuk direktori DocumentRoot web server
+cd /var/www
 # Clone repository
-git clone https://github.com/erlanggaalfian/Aplikasi.git
-cd Aplikasi
+git clone https://github.com/erlanggaalfian/netbackup.git
+cd netbackup
 
 # Berikan izin eksekusi pada skrip
 chmod +x install_server.sh
