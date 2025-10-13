@@ -48,7 +48,7 @@ $users = $stmt->fetchAll();
 
 include __DIR__ . '/includes/header.php';
 ?>
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <div>
     <h1 class="page-title">Manajemen Pengguna</h1>
     <p class="page-subtitle">Kelola pengguna sistem dan hak aksesnya.</p>

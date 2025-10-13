@@ -41,7 +41,7 @@ $devices = $stmt->fetchAll();
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <h1 class="page-title">Dashboard</h1>
   <p class="page-subtitle">Selamat datang, <?php echo htmlspecialchars(current_user()['username']); ?>. Berikut ringkasan sistem Anda.</p>
 </div>

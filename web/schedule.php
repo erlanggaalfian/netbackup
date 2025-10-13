@@ -76,7 +76,7 @@ $devices = $stmt->fetchAll();
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <h1 class="page-title">Jadwal Backup Otomatis</h1>
   <p class="page-subtitle">Atur jadwal backup harian, mingguan, atau bulanan untuk setiap perangkat.</p>
   <div class="alert info">

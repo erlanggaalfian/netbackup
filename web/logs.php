@@ -43,7 +43,7 @@ function get_badge_class($type) {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <div>
     <h1 class="page-title">Log Sistem</h1>
     <p class="page-subtitle">Pantau semua aktivitas yang tercatat di dalam sistem.</p>

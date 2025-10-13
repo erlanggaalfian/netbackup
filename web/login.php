@@ -49,6 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="auth-page">
+
+<!-- Canvas untuk latar belakang interaktif -->
+<canvas id="auth-interactive-bg"></canvas>
+
 <div class="login-container">
 <div class="logo-section">
     <img src="/img/logo.png" alt="NetBackup Logo" style="height: 85px; margin-bottom: 16px;">
@@ -99,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <a href="#" class="forgot-password">Lupa password?</a>
     </div>
 
-    <button type="submit" class="login-btn">
+    <button type="submit" class="btn login-btn">
       <span>Masuk</span>
       <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -108,9 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </form>
 
     <p class="footer-text">
-            &copy; <?php echo date('Y'); ?> NetBackup. Created by Erlangga Alfian.
-            </p>
-    </div>
+        &copy; <?php echo date('Y'); ?> NetBackup. Created by Erlangga Alfian.
+    </p>
 </div>
 
 <script>
@@ -136,6 +139,90 @@ function togglePassword() {
     `;
   }
 }
+
+// --- SCRIPT UNTUK LATAR BELAKANG INTERAKTIF ---
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('auth-interactive-bg');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const container = document.querySelector('.login-container');
+    let particlesArray;
+
+    function getRgbFromCss(variableName) {
+        const colorStr = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+        if (colorStr.startsWith('#')) {
+            const r = parseInt(colorStr.slice(1, 3), 16);
+            const g = parseInt(colorStr.slice(3, 5), 16);
+            const b = parseInt(colorStr.slice(5, 7), 16);
+            return { r, g, b };
+        }
+        return { r: 244, g: 247, b: 249 }; // Fallback to bg-body color
+    }
+    const particleRgb = getRgbFromCss('--color-bg-body');
+
+    function setCanvasSize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    setCanvasSize();
+
+    class Particle {
+        constructor(x, y, dirX, dirY, size, color) { this.x = x; this.y = y; this.directionX = dirX; this.directionY = dirY; this.size = size; this.color = color; }
+        draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false); ctx.fillStyle = this.color; ctx.fill(); }
+        update() { if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX; if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY; this.x += this.directionX; this.y += this.directionY; this.draw(); }
+    }
+
+    function init() {
+        particlesArray = [];
+        let numParticles = (canvas.height * canvas.width) / 9000;
+        for (let i = 0; i < numParticles; i++) {
+            let size = (Math.random() * 2) + 1;
+            let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+            let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+            let dirX = (Math.random() * .4) - .2;
+            let dirY = (Math.random() * .4) - .2;
+            let color = `rgba(${particleRgb.r}, ${particleRgb.g}, ${particleRgb.b}, 0.5)`;
+            particlesArray.push(new Particle(x, y, dirX, dirY, size, color));
+        }
+    }
+
+    function connect() {
+        let opacity = 1;
+        for (let a = 0; a < particlesArray.length; a++) {
+            for (let b = a; b < particlesArray.length; b++) {
+                let dist = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
+                if (dist < (canvas.width / 7) * (canvas.height / 7)) {
+                    opacity = 1 - (dist / 20000);
+                    ctx.strokeStyle = `rgba(${particleRgb.r}, ${particleRgb.g}, ${particleRgb.b}, ${opacity * 0.3})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                    ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                    ctx.stroke();
+                }
+            }
+        }
+    }
+    function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, innerWidth, innerHeight); for (let i = 0; i < particlesArray.length; i++) particlesArray[i].update(); connect(); }
+    
+    window.addEventListener('resize', () => { setCanvasSize(); init(); });
+    
+    // Efek 3D Tilt
+    if(container) {
+        container.addEventListener('mousemove', (e) => {
+            let rect = container.getBoundingClientRect();
+            let x = e.clientX - rect.left - rect.width / 2;
+            let y = e.clientY - rect.top - rect.height / 2;
+            let rotateX = -y / (rect.height / 2) * 5;
+            let rotateY = x / (rect.width / 2) * 5;
+            container.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1, 1, 1)`;
+        });
+        container.addEventListener('mouseleave', () => { container.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)'; });
+    }
+
+    init();
+    animate();
+});
 </script>
 </body>
 </html>

@@ -60,7 +60,7 @@ $vendors = $pdo->query('SELECT id, name, command FROM vendor ORDER BY name ASC')
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <h1 class="page-title">Manajemen Vendor</h1>
   <p class="page-subtitle">Tambah, edit, atau hapus vendor perangkat dan command backup-nya</p>
   <button onclick="toggleNotes()" class="btn btn-sm badge-notes">

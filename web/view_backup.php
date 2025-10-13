@@ -17,7 +17,7 @@ if (!$row) {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <h1 class="page-title">Detail Backup</h1>
   <p class="page-subtitle">
     Perangkat: <strong><?php echo htmlspecialchars($row['device_name']); ?></strong> | 

@@ -111,7 +111,7 @@ $devices = $pdo->query("SELECT id, name FROM devices ORDER BY name")->fetchAll()
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <h1 class="page-title">Riwayat Backup</h1>
   <p class="page-subtitle">Cari, urutkan, dan kelola semua riwayat backup perangkat.</p>
 </div>

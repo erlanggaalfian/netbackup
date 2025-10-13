@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <h1 class="page-title">Tambah Perangkat</h1>
   <p class="page-subtitle">Konfigurasi perangkat jaringan baru untuk manajemen backup</p>
 </div>
