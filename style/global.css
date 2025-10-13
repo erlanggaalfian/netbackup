@@ -46,6 +46,7 @@
   --color-modal-overlay: rgba(15, 23, 42, 0.5);
   --color-disabled: #94a3b8;
   --color-white-t-80: rgba(255, 255, 255, 0.8);
+  --color-white-t-70: rgba(255, 255, 255, 0.7);
   --color-white-t-50: rgba(255, 255, 255, 0.5);
   --color-white-t-30: rgba(255, 255, 255, 0.3);
   --color-white-t-10: rgba(255, 255, 255, 0.1);
@@ -233,13 +234,13 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 /* --- Brand/Logo --- */
 .navbar-brand .brand-link { display: flex; align-items: center; gap: 12px; text-decoration: none; transition: transform 0.2s ease-out; }
 .navbar-brand .brand-link:hover { transform: scale(1.05); }
-.navbar-img-logo { height: 36px; width: auto; }
+.navbar-img-logo { height: 40px; width: auto; }
 .navbar-brand .brand-name { color: var(--color-primary-text); font-weight: 700; font-size: 22px; }
 
 /* --- Menu Navigasi --- */
 .navbar-menu { display: flex; align-items: center; gap: 8px; }
-.nav-link { color: var(--color-white-t-80); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 14px; transition: all 0.2s ease-in-out; position: relative; border-bottom: 2px solid transparent; }
-.nav-link:hover { background-color: var(--color-primary-hover); color: var(--color-text-white); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.nav-link { color: var(--color-white-t-70); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 14px; transition: all 0.2s ease-in-out; position: relative; border-bottom: 1.5px solid transparent; }
+.nav-link:hover { background-color: var(--color-primary-hover); color: var(--color-text-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .nav-link.active { color: var(--color-text-white); font-weight: 600; border-bottom-color: var(--color-text-white); }
 .nav-separator { height: 24px; width: 1px; background-color: var(--color-white-t-30); margin: 0 8px; }
 

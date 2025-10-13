@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="auth-page">
 <div class="login-container">
 <div class="logo-section">
-    <img src="/img/logo.png" alt="NetBackup Logo" style="height: 80px; margin-bottom: 16px;">
+    <img src="/img/logo.png" alt="NetBackup Logo" style="height: 85px; margin-bottom: 16px;">
     <h1 class="logo-title">NetBackup</h1>
     <p class="logo-subtitle">BACKUP YOUR DEVICES</p>
 </div>
