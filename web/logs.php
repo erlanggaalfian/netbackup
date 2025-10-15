@@ -3,10 +3,21 @@ require_once __DIR__ . '/../config/db.php';
 require_login();
 require_admin(); // Hanya admin yang bisa melihat log
 
-// --- LOGIKA FILTER ---
+// --- LOGIKA FILTER & PENGURUTAN ---
 $filter_type = get('type') ?? '';
 $filter_device = (int)(get('device_id') ?? 0);
+$filter_start_date = get('start_date') ?? '';
+$filter_end_date = get('end_date') ?? '';
 $limit = in_array((int)(get('limit') ?? 50), [25, 50, 100, 200]) ? (int)(get('limit') ?? 50) : 50;
+
+// Logika pengurutan
+$sort_by = get('sort') ?? 'timestamp';
+$order = get('order') ?? 'desc';
+$allowed_sort = ['timestamp', 'type', 'actor_name', 'device_name'];
+$allowed_order = ['asc', 'desc'];
+if (!in_array($sort_by, $allowed_sort)) $sort_by = 'timestamp';
+if (!in_array($order, $allowed_order)) $order = 'desc';
+$order_by_clause = "ORDER BY {$sort_by} {$order}";
 
 // Bangun query SQL secara dinamis
 $params = [];
@@ -24,8 +35,16 @@ if ($filter_device > 0) {
     $sql .= ' AND l.target_id = ?';
     $params[] = $filter_device;
 }
+if ($filter_start_date) {
+    $sql .= ' AND l.timestamp >= ?';
+    $params[] = $filter_start_date . ' 00:00:00';
+}
+if ($filter_end_date) {
+    $sql .= ' AND l.timestamp <= ?';
+    $params[] = $filter_end_date . ' 23:59:59';
+}
 
-$sql .= ' ORDER BY l.timestamp DESC LIMIT ' . $limit;
+$sql .= " {$order_by_clause} LIMIT " . $limit;
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $logs = $stmt->fetchAll();
@@ -40,6 +59,14 @@ function get_badge_class($type) {
     return 'gray';
 }
 
+// Fungsi helper untuk membuat link pengurutan
+function sort_link($column, $text, $current_sort, $current_order) {
+    $order = ($current_sort === $column && $current_order === 'asc') ? 'desc' : 'asc';
+    $params = http_build_query(array_merge($_GET, ['sort' => $column, 'order' => $order]));
+    $class = ($current_sort === $column) ? "sortable active {$current_order}" : "sortable";
+    return "<th class=\"{$class}\"><a href=\"?{$params}\">{$text}<span class=\"sort-arrow\"></span></a></th>";
+}
+
 include __DIR__ . '/includes/header.php';
 ?>
 
@@ -51,8 +78,19 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div class="form-container form-container-full-width">
-  <form method="get" class="filter-form align-end">
-    <div class="field field-grow">
+  <form method="get">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; align-items: flex-end;">
+      
+      <div class="field" style="margin-bottom: 0;">
+        <label>Tanggal Mulai</label>
+        <input type="date" name="start_date" value="<?php echo htmlspecialchars($filter_start_date); ?>">
+      </div>
+      <div class="field" style="margin-bottom: 0;">
+        <label>Tanggal Akhir</label>
+        <input type="date" name="end_date" value="<?php echo htmlspecialchars($filter_end_date); ?>">
+      </div>
+
+      <div class="field" style="margin-bottom: 0;">
         <label>Tipe Log</label>
         <select name="type">
             <option value="">Semua Tipe</option>
@@ -62,8 +100,8 @@ include __DIR__ . '/includes/header.php';
                 </option>
             <?php endforeach; ?>
         </select>
-    </div>
-    <div class="field field-grow">
+      </div>
+      <div class="field" style="margin-bottom: 0;">
         <label>Perangkat</label>
         <select name="device_id">
             <option value="">Semua Perangkat</option>
@@ -73,8 +111,8 @@ include __DIR__ . '/includes/header.php';
                 </option>
             <?php endforeach; ?>
         </select>
-    </div>
-    <div class="field">
+      </div>
+      <div class="field" style="margin-bottom: 0;">
         <label>Limit</label>
         <select name="limit">
             <option value="25" <?php if ($limit === 25) echo 'selected'; ?>>25</option>
@@ -82,8 +120,9 @@ include __DIR__ . '/includes/header.php';
             <option value="100" <?php if ($limit === 100) echo 'selected'; ?>>100</option>
             <option value="200" <?php if ($limit === 200) echo 'selected'; ?>>200</option>
         </select>
+      </div>
     </div>
-    <div class="action-buttons">
+    <div class="action-buttons" style="margin-top: 16px;">
       <button type="submit" class="btn">Filter</button>
       <a href="/logs" class="btn secondary">Reset</a>
     </div>
@@ -106,10 +145,10 @@ include __DIR__ . '/includes/header.php';
     <table class="modern-table">
       <thead>
         <tr>
-          <th>Waktu</th>
-          <th>Tipe</th>
-          <th>Aktor</th>
-          <th>Perangkat</th>
+          <?php echo sort_link('timestamp', 'Waktu', $sort_by, $order); ?>
+          <?php echo sort_link('type', 'Tipe', $sort_by, $order); ?>
+          <?php echo sort_link('actor_name', 'Aktor', $sort_by, $order); ?>
+          <?php echo sort_link('device_name', 'Perangkat', $sort_by, $order); ?>
           <th>Detail</th>
         </tr>
       </thead>
@@ -136,7 +175,6 @@ include __DIR__ . '/includes/header.php';
 function clearLogs() {
     if (!confirm('Anda yakin ingin menghapus SEMUA log secara permanen? Aksi ini tidak dapat dibatalkan.')) return;
     
-    // Menggunakan endpoint API absolut '/api_clear_logs'
     fetch('/api_clear_logs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -163,4 +201,3 @@ function clearLogs() {
 </script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
-
