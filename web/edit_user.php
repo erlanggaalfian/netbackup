@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <h1 class="page-title">Edit Pengguna</h1>
   <p class="page-subtitle">Perbarui data pengguna: <?php echo htmlspecialchars($user['username']); ?></p>
 </div>

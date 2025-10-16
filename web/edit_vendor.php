@@ -44,7 +44,7 @@ if (!$vendor) {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header">
+<div class="form-container form-container-full-width">
   <h1 class="page-title">Edit Vendor</h1>
   <p class="page-subtitle">Perbarui nama dan command untuk vendor: <strong><?php echo htmlspecialchars($vendor['name']); ?></strong></p>
 </div>

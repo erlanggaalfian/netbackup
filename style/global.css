@@ -185,7 +185,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 .forgot-password { color: var(--color-text-link); text-decoration: none; }
 .forgot-password:hover { text-decoration: underline; }
 .login-btn { width: 100%; font-size: 16px; padding: 12px; font-weight: 700; transform: translateZ(25px); }
-.auth-page .footer-text { margin-top: 24px; color: var(--color-text-muted); font-size: 14px; text-align: center; }
+.auth-page .footer-text { margin-top: 24px; color: var(--color-text-muted); font-size: 13px; text-align: center; }
 #auth-interactive-bg { position: fixed; top: 0; left: 0; z-index: -1; }
 
 
@@ -240,7 +240,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; padd
 /* --- Brand/Logo --- */
 .navbar-brand .brand-link { display: flex; align-items: center; gap: 12px; text-decoration: none; transition: transform 0.2s ease-out; }
 .navbar-brand .brand-link:hover { transform: scale(1.05); }
-.navbar-img-logo { height: 40px; width: auto; }
+.navbar-img-logo { height: 42px; width: auto; }
 .navbar-brand .brand-name { color: var(--color-primary-text); font-weight: 700; font-size: 22px; }
 
 /* --- Menu Navigasi --- */

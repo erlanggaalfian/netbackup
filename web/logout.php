@@ -79,8 +79,8 @@ header('Refresh: 3; url=/login');
                 let size = (Math.random() * 2) + 1;
                 let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
                 let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-                let dirX = (Math.random() * .4) - .2;
-                let dirY = (Math.random() * .4) - .2;
+                let dirX = (Math.random() * 0.8) - 0.4;
+                let dirY = (Math.random() * 0.8) - 0.4;
                 let color = 'rgba(244, 247, 249, 0.5)';
                 particlesArray.push(new Particle(x, y, dirX, dirY, size, color));
             }

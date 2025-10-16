@@ -3,7 +3,7 @@
 <footer class="footer">
     <div class="footer-content">
         <p class="footer-text">
-            &copy; <?php echo date('Y'); ?> <strong>NetBackup</strong>. Created by Erlangga Alfian.
+            &copy; <?php echo date('Y'); ?> <strong>NetBackup</strong>. Built to rise - by Erlangga Alfian.
             </p>
         </div>
     </footer>
@@ -66,8 +66,8 @@ document.addEventListener('DOMContentLoaded', function() {
             let size = (Math.random() * 2) + 1;
             let x = (Math.random() * ((canvas.width - size * 2) - (size * 2)) + size * 2);
             let y = (Math.random() * ((canvas.height - size * 2) - (size * 2)) + size * 2);
-            let dirX = (Math.random() * .4) - .2;
-            let dirY = (Math.random() * .4) - .2;
+            let dirX = (Math.random() * 0.8) - 0.4;
+            let dirY = (Math.random() * 0.8) - 0.4;
             let color = `rgba(${particleRgb.r}, ${particleRgb.g}, ${particleRgb.b}, 0.5)`;
             particlesArray.push(new Particle(x, y, dirX, dirY, size, color));
         }

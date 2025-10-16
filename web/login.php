@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="logo-section">
     <img src="/img/logo.png" alt="NetBackup Logo" style="height: 85px; margin-bottom: 16px;">
     <h1 class="logo-title">NetBackup</h1>
-    <p class="logo-subtitle">BACKUP YOUR DEVICES</p>
+    <p class="logo-subtitle">ALWAYS READY TO RISE</p>
 </div>
 
   <?php if ($error): ?>
@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </form>
 
     <p class="footer-text">
-        &copy; <?php echo date('Y'); ?> NetBackup. Created by Erlangga Alfian.
+        &copy; <?php echo date('Y'); ?> NetBackup. Built to rise - by Erlangga Alfian.
     </p>
 </div>
 
@@ -179,8 +179,8 @@ document.addEventListener('DOMContentLoaded', function() {
             let size = (Math.random() * 2) + 1;
             let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
             let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-            let dirX = (Math.random() * .4) - .2;
-            let dirY = (Math.random() * .4) - .2;
+            let dirX = (Math.random() * 0.8) - 0.4;
+            let dirY = (Math.random() * 0.8) - 0.4;
             let color = `rgba(${particleRgb.r}, ${particleRgb.g}, ${particleRgb.b}, 0.5)`;
             particlesArray.push(new Particle(x, y, dirX, dirY, size, color));
         }
