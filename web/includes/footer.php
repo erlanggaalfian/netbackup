@@ -3,7 +3,7 @@
 <footer class="footer">
     <div class="footer-content">
         <p class="footer-text">
-            &copy; <?php echo date('Y'); ?> <strong>NetBackup</strong>. Built to rise - by Erlangga Alfian.
+            &copy; <?php echo date('Y'); ?> <strong>NetBackup</strong>. - by Erlangga Alfian.
             </p>
         </div>
     </footer>

@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </form>
 
     <p class="footer-text">
-        &copy; <?php echo date('Y'); ?> NetBackup. Built to rise - by Erlangga Alfian.
+        &copy; <?php echo date('Y'); ?> <strong>NetBackup</strong>. by Erlangga Alfian.
     </p>
 </div>
 
