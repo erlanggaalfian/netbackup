@@ -1269,13 +1269,8 @@ body.navbar-menu-open { overflow: hidden; }
   .dashboard-failure-feed-item { flex-direction: column; gap: 10px !important; padding: 12px 0 !important; }
   /* (0,1,1) mengalahkan .list-item align-items:center !important di bawah */
   li.dashboard-failure-feed-item { align-items: stretch !important; }
-  .dashboard-failure-feed-item .m-item-title { justify-content: flex-start; }
-  .dashboard-failure-feed-item .m-item-title-side { margin-left: auto; display: inline-flex; align-items: center; }
   .dashboard-failure-feed-item.m-item .dashboard-failure-feed-side { display: none; }
   .dashboard-failure-feed-item.m-item.is-open .dashboard-failure-feed-side { display: flex; }
-  .dashboard-failure-feed-item.m-item.is-open .dashboard-failure-feed-side .btn { width: 100%; }
-  /* Selaras: tombol aksi item konektivitas full-width seperti accordion lain */
-  li.connectivity-fail-item.m-item > a.btn { align-self: stretch; width: 100%; }
   .dashboard-failure-feed-item.is-active {
     margin: 0 !important;
     padding: 12px !important;
@@ -1466,6 +1461,8 @@ body.navbar-menu-open { overflow: hidden; }
   .m-item.is-open .m-item-title::after { transform: rotate(-135deg); }
   .m-item .m-item-extra { display: none; }
   .m-item.is-open .m-item-extra { display: block; }
+  /* Tombol aksi di item terbuka: full-width + teks tengah (selaras accordion tabel) */
+  .m-item.is-open .m-item-extra.btn { display: flex; width: 100%; }
 
   /* ── Collapsible filter blocks (mobile collapsed-first) ── */
   .form-container--filter .m-filter-more { display: none; }

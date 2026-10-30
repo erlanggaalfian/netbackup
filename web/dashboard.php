@@ -179,7 +179,7 @@ include __DIR__ . '/includes/header.php';
                 ?>
                 <li class="list-item dashboard-failure-feed-item m-item<?php echo $isActive ? ' is-active' : ''; ?>" aria-expanded="false">
                     <div class="dashboard-failure-feed-main">
-                        <span class="m-item-title"><strong><?php echo htmlspecialchars($deviceName); ?></strong><span class="m-item-title-side"><span class="badge <?php echo $isActive ? 'danger' : 'gray'; ?>"><?php echo $isActive ? 'Masih gagal' : 'Riwayat'; ?></span></span></span>
+                        <span class="m-item-title"><strong><?php echo htmlspecialchars($deviceName); ?></strong></span>
                         <span class="dashboard-failure-feed-meta m-item-extra">
                             <?php echo htmlspecialchars($deviceIp !== '' ? $deviceIp : '-'); ?>
                             · <?php echo date('d/m/Y H:i', strtotime($row['timestamp'])); ?>
