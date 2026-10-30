@@ -297,7 +297,7 @@ mysql_app_exec() {
         return 1
     fi
     if [ -n "$DB_PASS" ]; then
-        mysql -h "${DB_HOST:-localhost}" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "$sql"
+        mysql -h "${DB_HOST:-localhost}" -P "${DB_PORT:-3306}" -u "$DB_USER" "$DB_NAME" -e "$sql"
     else
         mysql -h "${DB_HOST:-localhost}" -P "${DB_PORT:-3306}" -u "$DB_USER" "$DB_NAME" -e "$sql"
     fi
@@ -309,7 +309,7 @@ mysql_app_scalar() {
         return 1
     fi
     if [ -n "$DB_PASS" ]; then
-        mysql -h "${DB_HOST:-localhost}" -P "${DB_PORT:-3306}" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -N -s -e "$sql" 2>/dev/null
+        mysql -h "${DB_HOST:-localhost}" -P "${DB_PORT:-3306}" -u "$DB_USER" "$DB_NAME" -N -s -e "$sql" 2>/dev/null
     else
         mysql -h "${DB_HOST:-localhost}" -P "${DB_PORT:-3306}" -u "$DB_USER" "$DB_NAME" -N -s -e "$sql" 2>/dev/null
     fi
@@ -420,6 +420,8 @@ DB_USER="$(ini_get DB_USER "$INI_FILE")"
 DB_PASS="$(ini_get DB_PASS "$INI_FILE")"
 DB_PORT="$(ini_get DB_PORT "$INI_FILE")"
 [ -z "$DB_PORT" ] && DB_PORT="3306"
+# Rahasia lewat env, bukan argv: -p"$DB_PASS" terbaca semua user via ps//proc
+export MYSQL_PWD="$DB_PASS"
 
 resolve_apache_and_domain
 if [ -n "$APACHE_CONF" ] && [ -f "$APACHE_CONF" ]; then
@@ -489,7 +491,7 @@ else
 
     if [ -n "$DB_NAME" ] && [ -n "$DB_USER" ] && command -v mysqldump &>/dev/null; then
         if [ -n "$DB_PASS" ]; then
-            mysqldump -h "${DB_HOST:-localhost}" -u "$DB_USER" -p"$DB_PASS" \
+            mysqldump -h "${DB_HOST:-localhost}" -u "$DB_USER" \
                 --single-transaction --routines --triggers "$DB_NAME" \
                 > "$DB_BACKUP_FILE" 2>> "$LOG_FILE"
         else
@@ -497,6 +499,7 @@ else
                 --single-transaction --routines --triggers "$DB_NAME" \
                 > "$DB_BACKUP_FILE" 2>> "$LOG_FILE"
         fi
+        chmod 600 "$DB_BACKUP_FILE"
         success "Backup database: $DB_BACKUP_FILE"
     else
         warn "Backup database dilewati (mysqldump/kredensial tidak tersedia)"
@@ -576,7 +579,7 @@ if [ -f "$TARGET_DIR/sql/schema.sql" ] && [ -n "$DB_NAME" ] && [ -n "$DB_USER" ]
     grep -v -E '^(CREATE DATABASE|USE )' "$TARGET_DIR/sql/schema.sql" > "$SCHEMA_TMP"
 
     if [ -n "$DB_PASS" ]; then
-        mysql -h "${DB_HOST:-localhost}" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \
+        mysql -h "${DB_HOST:-localhost}" -u "$DB_USER" "$DB_NAME" \
             < "$SCHEMA_TMP" >> "$LOG_FILE" 2>&1
     else
         mysql -h "${DB_HOST:-localhost}" -u "$DB_USER" "$DB_NAME" \
