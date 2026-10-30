@@ -154,13 +154,13 @@ include __DIR__ . '/includes/header.php';
     </div>
     <div style="display: flex; gap: 10px;">
         <button type="button" class="btn btn-sm secondary m-mobile-only" onclick="toggleSelectAllMobile()">
-            Pilih semua
+            Pilih
         </button>
         <button class="btn btn-sm danger" onclick="deleteSelectedLogs()">
-            Hapus Terpilih
+            <span class="m-desktop-only">Hapus Terpilih</span><span class="m-mobile-only">Hapus</span>
         </button>
         <button class="btn btn-sm danger" onclick="clearAllLogs()" style="opacity: 0.8;">
-            Kosongkan Semua
+            <span class="m-desktop-only">Kosongkan Semua</span><span class="m-mobile-only">Kosongkan</span>
         </button>
     </div>
   </div>

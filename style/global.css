@@ -1430,6 +1430,7 @@ body.navbar-menu-open { overflow: hidden; }
   .m-collapsible { display: none; }
   .m-collapsible.is-open { display: block; }
   .m-mobile-only { display: inline-flex !important; }
+  .m-desktop-only { display: none !important; }
   .connectivity-fail-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 
   /* ── Collapsible filter blocks (mobile collapsed-first) ── */

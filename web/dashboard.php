@@ -160,7 +160,7 @@ include __DIR__ . '/includes/header.php';
         <div class="dashboard-panel dashboard-panel-alert dashboard-failure-feed">
             <div class="card-header-flex">
                 <div>
-                    <div class="chart-title">Kegagalan Backup</div>
+                    <div class="chart-title">Kegagalan Backup <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="dash-fail-feed" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>
                     <p class="page-subtitle dashboard-panel-sub">
                         <?php if ($still_failed_count > 0): ?>
                             <?php echo (int)$still_failed_count; ?> perangkat masih gagal ·
@@ -170,6 +170,7 @@ include __DIR__ . '/includes/header.php';
                 </div>
                 <a href="/backups.php?sort=status&amp;order=asc" class="btn secondary btn-sm">Lihat Semua</a>
             </div>
+            <div class="m-collapsible" id="dash-fail-feed">
             <ul class="list-group dashboard-failure-feed-list">
                 <?php foreach ($failure_items as $row): ?>
                 <?php
@@ -204,12 +205,14 @@ include __DIR__ . '/includes/header.php';
                 <li class="list-item text-success">Tidak ada kegagalan backup tercatat.</li>
                 <?php endif; ?>
             </ul>
+            </div>
         </div>
     </div>
 
     <div class="grid-row-1">
         <div class="dashboard-panel">
-                <div class="chart-title">Top 5 Sering Gagal (All Time)</div>
+                <div class="chart-title">Top 5 Sering Gagal (All Time) <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="dash-top-fail" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>
+            <div class="m-collapsible" id="dash-top-fail">
             <ul class="list-group">
                 <?php foreach ($top_errors as $e): ?>
                 <li class="list-item">
@@ -219,6 +222,7 @@ include __DIR__ . '/includes/header.php';
                 <?php endforeach; ?>
                 <?php if(empty($top_errors)) echo '<li class="list-item text-success">Luar biasa! Tidak ada perangkat yang gagal.</li>'; ?>
             </ul>
+            </div>
         </div>
     </div>
 
@@ -226,9 +230,10 @@ include __DIR__ . '/includes/header.php';
         
         <div class="dashboard-panel">
             <div class="card-header-flex">
-                <div class="chart-title">Aktivitas Backup Terbaru</div>
+                <div class="chart-title">Aktivitas Backup Terbaru <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="dash-activity" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>
                 <a href="/backups.php" class="btn secondary btn-sm">Lihat Semua</a>
             </div>
+            <div class="m-collapsible" id="dash-activity">
             <ul class="list-group dashboard-activity-list">
                 <?php foreach ($recent_backups as $b): ?>
                 <li class="list-item dashboard-activity-item">
@@ -245,13 +250,15 @@ include __DIR__ . '/includes/header.php';
                 <li class="list-item text-success">Belum ada aktivitas.</li>
                 <?php endif; ?>
             </ul>
+            </div>
         </div>
 
         <div class="dashboard-panel">
             <div class="card-header-flex">
-                <div class="chart-title">Perangkat Tanpa Jadwal Aktif</div>
+                <div class="chart-title">Perangkat Tanpa Jadwal Aktif <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="dash-unscheduled" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>
                 <a href="/schedule.php" class="btn secondary btn-sm">Atur Jadwal</a>
             </div>
+            <div class="m-collapsible" id="dash-unscheduled">
             <ul class="list-group">
                 <?php foreach ($unscheduled_devices as $ud): ?>
                 <li class="list-item">
@@ -261,6 +268,7 @@ include __DIR__ . '/includes/header.php';
                 <?php endforeach; ?>
                 <?php if(empty($unscheduled_devices)) echo '<li class="list-item text-success">Semua perangkat memiliki jadwal aktif!</li>'; ?>
             </ul>
+            </div>
         </div>
 
     </div>

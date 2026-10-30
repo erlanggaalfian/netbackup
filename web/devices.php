@@ -188,9 +188,9 @@ include __DIR__ . '/includes/header.php';
         <div class="table-header">
             <h2 class="table-title">Daftar Perangkat <br><p class="page-subtitle">(Menampilkan <?= count($devices) ?> dari <?= $total_rows ?> Perangkat)</p></h2>
             <div class="bulk-actions">
-                <button type="button" class="btn btn-sm secondary m-mobile-only" id="mobile-select-all-btn">Pilih semua</button>
+                <button type="button" class="btn btn-sm secondary m-mobile-only" id="mobile-select-all-btn">Pilih</button>
                 <button onclick="bulkAction('delete')" class="btn btn-sm danger" disabled id="bulk-delete-btn">
-                    <span>Hapus Terpilih</span>
+                    <span class="m-desktop-only">Hapus Terpilih</span><span class="m-mobile-only">Hapus</span>
                 </button>
             </div>
         </div>
@@ -407,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const boxes = document.querySelectorAll('.device-checkbox');
         const checkedCount = document.querySelectorAll('.device-checkbox:checked').length;
         if (deleteBtn) deleteBtn.disabled = !(checkedCount > 0);
-        if (mobileSelectAllBtn) mobileSelectAllBtn.textContent = (boxes.length > 0 && checkedCount === boxes.length) ? 'Batal pilih' : 'Pilih semua';
+        if (mobileSelectAllBtn) mobileSelectAllBtn.textContent = (boxes.length > 0 && checkedCount === boxes.length) ? 'Batal' : 'Pilih';
     }
 
     if (selectAll) {
