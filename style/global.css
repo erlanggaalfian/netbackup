@@ -1269,6 +1269,20 @@ body.navbar-menu-open { overflow: hidden; }
   .dashboard-failure-feed-item { flex-direction: column; gap: 10px !important; padding: 12px 0 !important; }
   /* (0,1,1) mengalahkan .list-item align-items:center !important di bawah */
   li.dashboard-failure-feed-item { align-items: stretch !important; }
+  /* Samakan kartu dengan Ping/Koneksi Gagal: border + bg + jeda antar kartu */
+  .dashboard-failure-feed-list { display: flex; flex-direction: column; gap: 8px; }
+  li.dashboard-failure-feed-item,
+  li.dashboard-failure-feed-item.is-active {
+    background: var(--color-bg-content);
+    border: 1px solid var(--color-border) !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    margin: 0 !important;
+  }
+  li.dashboard-failure-feed-item.is-active {
+    background: var(--color-danger-soft-bg);
+    border-color: var(--color-danger-border-soft) !important;
+  }
   .dashboard-failure-feed-item.m-item .dashboard-failure-feed-side { display: none; }
   .dashboard-failure-feed-item.m-item.is-open .dashboard-failure-feed-side { display: flex; }
   .dashboard-failure-feed-item.is-active {
