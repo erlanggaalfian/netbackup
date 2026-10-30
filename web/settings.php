@@ -204,7 +204,7 @@ include __DIR__ . '/includes/header.php';
 <?php endif; ?>
 
 <?php if ($test_status === true): ?>
-  <div class="alert success" style="background: #e6f4ea; color: #137333; border: 1px solid #ceead6; padding: 12px; border-radius: 6px; margin-bottom: 24px; font-size: 14px;">
+  <div class="alert success" style="background: #e6f4ea; color: #137333; border: 1px solid #ceead6; padding: 12px; border-radius: 6px; margin-bottom: 24px;">
       ✅ <strong>Telegram Test:</strong> <?php echo htmlspecialchars($test_message); ?>
   </div>
 <?php elseif ($test_status === false): ?>

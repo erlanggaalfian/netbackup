@@ -137,14 +137,14 @@ include __DIR__ . '/includes/header.php';
             <div class="connectivity-stat-block">
                 <div class="connectivity-stat-label">Ping (ICMP)</div>
                 <div class="connectivity-stat-pills" id="ping-stat-pills">
-                    <span class="conn-pill conn-pill-muted">—</span>
+                    <span class="badge gray">—</span>
                 </div>
             </div>
             <div class="connectivity-stat-divider" aria-hidden="true"></div>
             <div class="connectivity-stat-block">
                 <div class="connectivity-stat-label">SSH / Telnet</div>
                 <div class="connectivity-stat-pills" id="interconnect-stat-pills">
-                    <span class="conn-pill conn-pill-muted">—</span>
+                    <span class="badge gray">—</span>
                 </div>
             </div>
         </div>
@@ -303,16 +303,16 @@ include __DIR__ . '/includes/header.php';
         if (!container) return;
         const parts = [];
         if (stats.ok > 0) {
-            parts.push('<span class="conn-pill conn-pill-ok">' + stats.ok + ' ' + labels.ok + '</span>');
+            parts.push('<span class="badge success">' + stats.ok + ' ' + labels.ok + '</span>');
         }
         if (stats.failed > 0) {
-            parts.push('<span class="conn-pill conn-pill-fail">' + stats.failed + ' ' + labels.fail + '</span>');
+            parts.push('<span class="badge danger">' + stats.failed + ' ' + labels.fail + '</span>');
         }
         if (stats.unknown > 0) {
-            parts.push('<span class="conn-pill conn-pill-unknown">' + stats.unknown + ' ' + labels.unknown + '</span>');
+            parts.push('<span class="badge gray">' + stats.unknown + ' ' + labels.unknown + '</span>');
         }
         if (parts.length === 0) {
-            container.innerHTML = '<span class="conn-pill conn-pill-muted">Tidak ada data</span>';
+            container.innerHTML = '<span class="badge gray">Tidak ada data</span>';
             return;
         }
         container.innerHTML = parts.join('');

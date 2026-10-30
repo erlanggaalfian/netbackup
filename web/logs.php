@@ -167,7 +167,7 @@ include __DIR__ . '/includes/header.php';
   
   <?php if (empty($logs)): ?>
     <div class="page-404">
-      <p style="font-size: 18px; color: var(--color-text-header); font-weight: 500;">Tidak ada log ditemukan</p>
+      <p class="empty-data-text">Tidak ada log ditemukan</p>
       <p class="small-text-muted">Belum ada aktivitas yang tercatat atau filter Anda tidak cocok.</p>
     </div>
   <?php else: ?>
@@ -195,7 +195,7 @@ include __DIR__ . '/includes/header.php';
             <td data-label="Tipe"><span class="badge <?php echo get_badge_class($log['type']); ?>"><?php echo htmlspecialchars($log['type']); ?></span></td>
             <td data-label="Aktor"><?php echo htmlspecialchars($log['actor_name'] ?? 'Sistem'); ?></td>
             <td data-label="Perangkat"><?php echo htmlspecialchars($log['device_name'] ?? '-'); ?></td>
-            <td data-label="Detail" style="font-size: 13px;"><?php echo htmlspecialchars($log['details'] ?? $log['message'] ?? '-'); ?></td>
+            <td data-label="Detail"><?php echo htmlspecialchars($log['details'] ?? $log['message'] ?? '-'); ?></td>
           </tr>
         <?php endforeach; ?>
       </tbody>
