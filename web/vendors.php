@@ -71,11 +71,11 @@ $vendors = $pdo->query('SELECT id, name, command, is_interactive FROM vendor ORD
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container motion-fade-up motion-fade-up">
+<div class="page-header-container m-item motion-fade-up motion-fade-up">
   <div class="page-header-flex">
     <div>
-      <h1 class="page-header">Manajemen Vendor</h1>
-      <p class="page-subtitle">Tambah, edit, atau hapus vendor perangkat dan command backup-nya</p>
+      <h1 class="page-header m-item-title">Manajemen Vendor</h1>
+      <p class="page-subtitle m-item-extra">Tambah, edit, atau hapus vendor perangkat dan command backup-nya</p>
     </div>
     <div class="page-actions">
       <button onclick="toggleNotes()" class="btn secondary">Lihat Contoh Command</button>

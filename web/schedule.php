@@ -147,9 +147,9 @@ $rows = $stmt->fetchAll();
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container">
-  <h1 class="page-header">Jadwal Backup Otomatis</h1>
-  <p class="page-subtitle">Atur jadwal backup harian, mingguan, atau bulanan untuk setiap perangkat.</p>
+<div class="page-header-container m-item">
+  <h1 class="page-header m-item-title">Jadwal Backup Otomatis</h1>
+  <p class="page-subtitle m-item-extra">Atur jadwal backup harian, mingguan, atau bulanan untuk setiap perangkat.</p>
   <div class="alert info alert-info-spaced">
     <strong>💡 Info Penjadwalan:</strong> Backup otomatis dijalankan oleh scheduler di server (cron job) setiap jam. Sistem akan mengeksekusi backup jika waktunya cocok dengan jadwal yang Anda atur di bawah.
   </div>

@@ -112,11 +112,11 @@ $page_body_class = 'page-heavy';
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container motion-fade-up motion-fade-up">
+<div class="page-header-container m-item motion-fade-up motion-fade-up">
     <div class="page-header-row">
         <div>
-            <h1 class="page-header"><?= htmlspecialchars($view_title) ?></h1>
-            <p class="page-subtitle">Kelola dan pantau status konektivitas perangkat jaringan Anda.</p>
+            <h1 class="page-header m-item-title"><?= htmlspecialchars($view_title) ?></h1>
+            <p class="page-subtitle m-item-extra">Kelola dan pantau status konektivitas perangkat jaringan Anda.</p>
         </div>
         <div class="page-actions">
             <a href="add_device.php" class="btn">Tambah Perangkat</a>
@@ -378,7 +378,10 @@ async function checkDeviceStatus(deviceId, button = null) {
 }
 
 async function manualBackup(deviceId, deviceName, button) {
-    if (!confirm(`Backup manual "${deviceName}"?`)) return;
+    const ok = window.mConfirm
+        ? await window.mConfirm({ title: 'Backup manual?', message: `Jalankan backup manual untuk "${deviceName}"?`, confirmText: 'Ya, jalankan', danger: false })
+        : confirm(`Backup manual "${deviceName}"?`);
+    if (!ok) return;
     button.disabled = true; button.innerHTML = '...';
     const csrf = document.getElementById('csrf-token').value;
     const sshElement = document.getElementById(`ssh-status-${deviceId}`);

@@ -92,9 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container motion-fade-up">
-  <h1 class="page-header">Tambah Perangkat</h1>
-  <p class="page-subtitle">Konfigurasi perangkat jaringan baru untuk manajemen backup</p>
+<div class="page-header-container m-item motion-fade-up">
+  <h1 class="page-header m-item-title">Tambah Perangkat</h1>
+  <p class="page-subtitle m-item-extra">Konfigurasi perangkat jaringan baru untuk manajemen backup</p>
 </div>
 
 <div class="form-container motion-fade-up">

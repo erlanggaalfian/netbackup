@@ -176,11 +176,11 @@ $backups = $stmt->fetchAll();
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container motion-fade-up motion-fade-up">
+<div class="page-header-container m-item motion-fade-up motion-fade-up">
     <div class="page-header-row">
         <div>
-            <h1 class="page-header"><?= htmlspecialchars($view_title) ?></h1>
-            <p class="page-subtitle">Pusat data backup jaringan yang tersimpan di server secara aman.</p>
+            <h1 class="page-header m-item-title"><?= htmlspecialchars($view_title) ?></h1>
+            <p class="page-subtitle m-item-extra">Pusat data backup jaringan yang tersimpan di server secara aman.</p>
         </div>
         <div class="page-actions">
             <a href="devices.php" class="btn secondary">Ke Perangkat</a>

@@ -38,9 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container">
-  <h1 class="page-header">Edit Pengguna</h1>
-  <p class="page-subtitle">Perbarui data pengguna: <?php echo htmlspecialchars($user['username']); ?></p>
+<div class="page-header-container m-item">
+  <h1 class="page-header m-item-title">Edit Pengguna</h1>
+  <p class="page-subtitle m-item-extra">Perbarui data pengguna: <?php echo htmlspecialchars($user['username']); ?></p>
 </div>
 
 <div class="form-container">

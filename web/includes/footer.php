@@ -43,16 +43,18 @@
         });
     });
 
-    // Klik di luar panel & trigger menutup menu
+    // Klik di luar panel & trigger HANYA menutup menu — kliknya ditelan di
+    // capture phase agar tidak ikut menekan apapun di balik panel.
     document.addEventListener('click', function (e) {
-        if (navbar.classList.contains('is-open')) {
-            const isInsidePanel = panel.contains(e.target);
-            const isInsideTrigger = Array.from(triggers).some(function (t) { return t.contains(e.target); });
-            if (!isInsidePanel && !isInsideTrigger) {
-                setMenuOpen(false);
-            }
+        if (!navbar.classList.contains('is-open')) return;
+        const isInsidePanel = panel.contains(e.target);
+        const isInsideTrigger = Array.from(triggers).some(function (t) { return t.contains(e.target); });
+        if (!isInsidePanel && !isInsideTrigger) {
+            e.preventDefault();
+            e.stopPropagation();
+            setMenuOpen(false);
         }
-    });
+    }, true);
 
     window.addEventListener('resize', function () {
         if (window.innerWidth > 768) setMenuOpen(false);
@@ -73,6 +75,17 @@
                 tr.classList.toggle('is-expanded');
             }
         }
+    });
+
+    // Per-item accordion for dashboard lists (mobile only): ketuk item
+    // (selain link/tombol) untuk melipat/membuka detailnya.
+    document.addEventListener('click', function (e) {
+        if (window.innerWidth > 768) return;
+        const item = e.target.closest('.m-item');
+        if (!item) return;
+        if (e.target.closest('a, button, input, select, label')) return;
+        const isOpen = item.classList.toggle('is-open');
+        item.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
 
     // Shared mobile collapsed-first disclosure: [data-toggle] buttons

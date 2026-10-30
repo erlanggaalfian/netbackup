@@ -30,10 +30,10 @@ $page_body_class = 'backup-view-page';
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container motion-fade-up page-header-flex">
+<div class="page-header-container m-item motion-fade-up page-header-flex">
     <div>
-        <h1 class="page-header">Detail Backup</h1>
-        <p class="page-subtitle">Pratinjau dan pencarian isi konfigurasi perangkat.</p>
+        <h1 class="page-header m-item-title">Detail Backup</h1>
+        <p class="page-subtitle m-item-extra">Pratinjau dan pencarian isi konfigurasi perangkat.</p>
     </div>
     <div class="page-actions">
         <a href="/backups.php" class="btn btn-sm secondary">← Kembali</a>

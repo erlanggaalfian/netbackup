@@ -188,9 +188,9 @@ try {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container motion-fade-up motion-fade-up">
-  <h1 class="page-header">Pengaturan Sistem Global</h1>
-  <p class="page-subtitle">Kelola hak akses pengguna sistem dan konfigurasi integrasi laporan otomatisasi pencadangan</p>
+<div class="page-header-container m-item motion-fade-up motion-fade-up">
+  <h1 class="page-header m-item-title">Pengaturan Sistem Global</h1>
+  <p class="page-subtitle m-item-extra">Kelola hak akses pengguna sistem dan konfigurasi integrasi laporan otomatisasi pencadangan</p>
 </div>
 
 <?php if ($success): ?>

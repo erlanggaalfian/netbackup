@@ -127,9 +127,9 @@ include __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Bagian Header disamakan dengan style Edit Perangkat -->
-<div class="page-header-container">
-    <h1 class="page-header">Edit Vendor</h1>
-    <p class="page-subtitle">
+<div class="page-header-container m-item">
+    <h1 class="page-header m-item-title">Edit Vendor</h1>
+    <p class="page-subtitle m-item-extra">
         Perbarui konfigurasi vendor: <strong><?php echo htmlspecialchars($vendor['name']); ?></strong>
     </p>
 </div>

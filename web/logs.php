@@ -80,9 +80,9 @@ function get_badge_class($type) {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container motion-fade-up motion-fade-up">
-  <h1 class="page-header">Log Sistem</h1>
-  <p class="page-subtitle">Pantau semua aktivitas yang tercatat di dalam sistem.</p>
+<div class="page-header-container m-item motion-fade-up motion-fade-up">
+  <h1 class="page-header m-item-title">Log Sistem</h1>
+  <p class="page-subtitle m-item-extra">Pantau semua aktivitas yang tercatat di dalam sistem.</p>
 </div>
 
 <div class="form-container motion-fade-up form-container--filter">

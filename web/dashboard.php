@@ -39,9 +39,9 @@ $page_body_class = 'page-heavy';
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div class="page-header-container motion-fade-up dashboard-page-header">
-  <h1 class="page-header">Dashboard Analitik</h1>
-  <p class="page-subtitle">Ringkasan aktivitas backup jaringan Anda.</p>
+<div class="page-header-container motion-fade-up dashboard-page-header m-item">
+  <h1 class="page-header m-item-title">Dashboard Analitik</h1>
+  <p class="page-subtitle m-item-extra">Ringkasan aktivitas backup jaringan Anda.</p>
 </div>
 
 <div class="form-container motion-fade-up dashboard-section scroll-reveal">
@@ -160,7 +160,7 @@ include __DIR__ . '/includes/header.php';
         <div class="dashboard-panel dashboard-panel-alert dashboard-failure-feed">
             <div class="card-header-flex">
                 <div>
-                    <div class="chart-title">Kegagalan Backup <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="dash-fail-feed" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>
+                    <div class="chart-title">Kegagalan Backup</div>
                     <p class="page-subtitle dashboard-panel-sub">
                         <?php if ($still_failed_count > 0): ?>
                             <?php echo (int)$still_failed_count; ?> perangkat masih gagal ·
@@ -170,7 +170,6 @@ include __DIR__ . '/includes/header.php';
                 </div>
                 <a href="/backups.php?sort=status&amp;order=asc" class="btn secondary btn-sm">Lihat Semua</a>
             </div>
-            <div class="m-collapsible" id="dash-fail-feed">
             <ul class="list-group dashboard-failure-feed-list">
                 <?php foreach ($failure_items as $row): ?>
                 <?php
@@ -178,14 +177,14 @@ include __DIR__ . '/includes/header.php';
                     $deviceName = (string)($row['device_name'] ?? '');
                     $deviceIp = (string)($row['device_ip'] ?? '');
                 ?>
-                <li class="list-item dashboard-failure-feed-item<?php echo $isActive ? ' is-active' : ''; ?>">
+                <li class="list-item dashboard-failure-feed-item m-item<?php echo $isActive ? ' is-active' : ''; ?>" aria-expanded="false">
                     <div class="dashboard-failure-feed-main">
-                        <strong><?php echo htmlspecialchars($deviceName); ?></strong>
-                        <span class="dashboard-failure-feed-meta">
+                        <span class="m-item-title"><strong><?php echo htmlspecialchars($deviceName); ?></strong></span>
+                        <span class="dashboard-failure-feed-meta m-item-extra">
                             <?php echo htmlspecialchars($deviceIp !== '' ? $deviceIp : '-'); ?>
                             · <?php echo date('d/m/Y H:i', strtotime($row['timestamp'])); ?>
                         </span>
-                        <span class="dashboard-failure-feed-hint">
+                        <span class="dashboard-failure-feed-hint m-item-extra">
                             <?php if ($isActive): ?>
                                 Backup terakhir perangkat ini masih gagal — perlu tindakan.
                             <?php else: ?>
@@ -197,7 +196,7 @@ include __DIR__ . '/includes/header.php';
                         <span class="badge <?php echo $isActive ? 'danger' : 'gray'; ?>">
                             <?php echo $isActive ? 'Masih gagal' : 'Riwayat'; ?>
                         </span>
-                        <a href="/view_backup.php?id=<?php echo (int)$row['backup_id']; ?>" class="btn btn-sm secondary">Detail</a>
+                        <a href="/view_backup.php?id=<?php echo (int)$row['backup_id']; ?>" class="btn btn-sm secondary m-item-extra">Detail</a>
                     </div>
                 </li>
                 <?php endforeach; ?>
@@ -205,14 +204,12 @@ include __DIR__ . '/includes/header.php';
                 <li class="list-item text-success">Tidak ada kegagalan backup tercatat.</li>
                 <?php endif; ?>
             </ul>
-            </div>
         </div>
     </div>
 
     <div class="grid-row-1">
         <div class="dashboard-panel">
-                <div class="chart-title">Top 5 Sering Gagal (All Time) <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="dash-top-fail" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>
-            <div class="m-collapsible" id="dash-top-fail">
+                <div class="chart-title">Top 5 Sering Gagal (All Time)</div>
             <ul class="list-group">
                 <?php foreach ($top_errors as $e): ?>
                 <li class="list-item">
@@ -222,7 +219,6 @@ include __DIR__ . '/includes/header.php';
                 <?php endforeach; ?>
                 <?php if(empty($top_errors)) echo '<li class="list-item text-success">Luar biasa! Tidak ada perangkat yang gagal.</li>'; ?>
             </ul>
-            </div>
         </div>
     </div>
 
@@ -230,10 +226,9 @@ include __DIR__ . '/includes/header.php';
         
         <div class="dashboard-panel">
             <div class="card-header-flex">
-                <div class="chart-title">Aktivitas Backup Terbaru <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="dash-activity" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>
+                <div class="chart-title">Aktivitas Backup Terbaru</div>
                 <a href="/backups.php" class="btn secondary btn-sm">Lihat Semua</a>
             </div>
-            <div class="m-collapsible" id="dash-activity">
             <ul class="list-group dashboard-activity-list">
                 <?php foreach ($recent_backups as $b): ?>
                 <li class="list-item dashboard-activity-item">
@@ -250,15 +245,13 @@ include __DIR__ . '/includes/header.php';
                 <li class="list-item text-success">Belum ada aktivitas.</li>
                 <?php endif; ?>
             </ul>
-            </div>
         </div>
 
         <div class="dashboard-panel">
             <div class="card-header-flex">
-                <div class="chart-title">Perangkat Tanpa Jadwal Aktif <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="dash-unscheduled" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>
+                <div class="chart-title">Perangkat Tanpa Jadwal Aktif</div>
                 <a href="/schedule.php" class="btn secondary btn-sm">Atur Jadwal</a>
             </div>
-            <div class="m-collapsible" id="dash-unscheduled">
             <ul class="list-group">
                 <?php foreach ($unscheduled_devices as $ud): ?>
                 <li class="list-item">
@@ -268,7 +261,6 @@ include __DIR__ . '/includes/header.php';
                 <?php endforeach; ?>
                 <?php if(empty($unscheduled_devices)) echo '<li class="list-item text-success">Semua perangkat memiliki jadwal aktif!</li>'; ?>
             </ul>
-            </div>
         </div>
 
     </div>
@@ -343,17 +335,15 @@ include __DIR__ . '/includes/header.php';
     function renderPingFailList(devices) {
         if (!devices || devices.length === 0) return '';
         const items = devices.map(function (d) {
-            return '<li class="connectivity-fail-item">' +
-                '<a href="' + deviceLink(d) + '" class="connectivity-fail-btn">' +
-                '<span class="connectivity-fail-name">' + escapeHtml(d.name) + '</span>' +
-                '<span class="connectivity-fail-meta">tidak merespons ping</span>' +
-                '</a></li>';
+            return '<li class="connectivity-fail-item m-item" aria-expanded="false">' +
+                '<span class="m-item-title"><span class="connectivity-fail-name">' + escapeHtml(d.name) + '</span></span>' +
+                '<span class="connectivity-fail-meta m-item-extra">tidak merespons ping</span>' +
+                '<a href="' + deviceLink(d) + '" class="btn btn-sm secondary m-item-extra">Lihat perangkat</a>' +
+                '</li>';
         }).join('');
         return '<div class="connectivity-fail-section">' +
-            '<div class="connectivity-fail-heading">Ping gagal (' + devices.length + ')' +
-            '<button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="conn-fail-ping" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>' +
-            '<div class="m-collapsible" id="conn-fail-ping">' +
-            '<ul class="connectivity-fail-list">' + items + '</ul></div></div>';
+            '<div class="connectivity-fail-heading">Ping gagal (' + devices.length + ')</div>' +
+            '<ul class="connectivity-fail-list">' + items + '</ul></div>';
     }
 
     function renderInterconnectFailList(devices) {
@@ -361,17 +351,15 @@ include __DIR__ . '/includes/header.php';
         const items = devices.map(function (d) {
             const proto = escapeHtml(d.protocol || 'SSH');
             const port = parseInt(d.port, 10) || (proto === 'Telnet' ? 23 : 22);
-            return '<li class="connectivity-fail-item">' +
-                '<a href="' + deviceLink(d) + '" class="connectivity-fail-btn">' +
-                '<span class="connectivity-fail-name">' + escapeHtml(d.name) + '</span>' +
-                '<span class="connectivity-fail-meta">' + proto + ' port ' + port + ' gagal</span>' +
-                '</a></li>';
+            return '<li class="connectivity-fail-item m-item" aria-expanded="false">' +
+                '<span class="m-item-title"><span class="connectivity-fail-name">' + escapeHtml(d.name) + '</span></span>' +
+                '<span class="connectivity-fail-meta m-item-extra">' + proto + ' port ' + port + ' gagal</span>' +
+                '<a href="' + deviceLink(d) + '" class="btn btn-sm secondary m-item-extra">Lihat perangkat</a>' +
+                '</li>';
         }).join('');
         return '<div class="connectivity-fail-section">' +
-            '<div class="connectivity-fail-heading">Koneksi gagal (' + devices.length + ')' +
-            '<button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="conn-fail-interconnect" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>' +
-            '<div class="m-collapsible" id="conn-fail-interconnect">' +
-            '<ul class="connectivity-fail-list">' + items + '</ul></div></div>';
+            '<div class="connectivity-fail-heading">Koneksi gagal (' + devices.length + ')</div>' +
+            '<ul class="connectivity-fail-list">' + items + '</ul></div>';
     }
 
     function applyConnectivityData(payload) {
