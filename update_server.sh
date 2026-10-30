@@ -551,6 +551,7 @@ mkdir -p "$TARGET_DIR/config"
 [ -f "$SCRIPT_DIR/install_server.sh" ] && cp -f "$SCRIPT_DIR/install_server.sh" "$TARGET_DIR/"
 [ -f "$SCRIPT_DIR/update_server.sh" ] && cp -f "$SCRIPT_DIR/update_server.sh" "$TARGET_DIR/"
 [ -f "$SCRIPT_DIR/Otomatisasi_Backup_Database_ke_Google_Drive.md" ] && cp -f "$SCRIPT_DIR/Otomatisasi_Backup_Database_ke_Google_Drive.md" "$TARGET_DIR/" 2>/dev/null || true
+[ -f "$SCRIPT_DIR/manifest.webmanifest" ] && cp -f "$SCRIPT_DIR/manifest.webmanifest" "$TARGET_DIR/"
 if [ -d "$SCRIPT_DIR/apache" ]; then
     mkdir -p "$TARGET_DIR/apache"
     cp -a "$SCRIPT_DIR/apache/." "$TARGET_DIR/apache/"
