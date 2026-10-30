@@ -1266,7 +1266,9 @@ body.navbar-menu-open { overflow: hidden; }
   .dashboard-activity-item { align-items: center !important; padding: 10px 0 !important; }
   .dashboard-activity-main strong { font-size: 13px !important; }
   .dashboard-activity-time { font-size: 11px !important; }
-  .dashboard-failure-feed-item { flex-direction: column; gap: 10px !important; padding: 12px 0 !important; align-items: stretch !important; }
+  .dashboard-failure-feed-item { flex-direction: column; gap: 10px !important; padding: 12px 0 !important; }
+  /* (0,1,1) mengalahkan .list-item align-items:center !important di bawah */
+  li.dashboard-failure-feed-item { align-items: stretch !important; }
   .dashboard-failure-feed-item .m-item-title { justify-content: flex-start; }
   .dashboard-failure-feed-item .m-item-title-side { margin-left: auto; display: inline-flex; align-items: center; }
   .dashboard-failure-feed-item.m-item .dashboard-failure-feed-side { display: none; }
