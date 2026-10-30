@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../config/db.php';
     <title>NetBackup - Manajemen Backup Perangkat Jaringan</title>
     <link rel="icon" type="image/png" href="/img/logo.png">
     <link rel="shortcut icon" type="image/png" href="/img/logo.png">
-    <link rel="stylesheet" href="/style/global.css?v=2.11.0_tilt">
+    <link rel="stylesheet" href="/style/global.css?v=2.11.1_navfix">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">

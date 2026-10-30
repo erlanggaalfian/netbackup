@@ -925,6 +925,12 @@ body.navbar-menu-open { overflow: hidden; }
     background-color: var(--color-primary) !important;
     box-shadow: 0 2px 4px var(--color-shadow-10) !important;
     border-bottom: none !important;
+    /* ponytail: backdrop-filter .navbar (var --backdrop-blur) menjadikan dirinya
+       wadah position:fixed bagi anaknya (bottom-nav & panel ikut terpatok ke kotak
+       navbar = muncul di atas). Latar mobile solid, blur tak terlihat — matikan.
+       Naikkan: pindah .mobile-bottom-nav ke luar .navbar di header.php. */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
   .navbar-toggle { display: none !important; }
   .navbar-menu,
