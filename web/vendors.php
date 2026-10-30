@@ -222,7 +222,7 @@ include __DIR__ . '/includes/header.php';
                 <?php else: ?>
                     <?php foreach ($vendors as $vendor): ?>
                     <tr>
-                        <td class="td-primary" data-label="Nama Vendor"><strong><?php echo htmlspecialchars($vendor['name']); ?></strong></td>
+                        <td class="td-primary" data-label="Nama Vendor"><strong><?php echo htmlspecialchars($vendor['name']); ?></strong> <span class="m-collapsed-extra"><?php if ((int)($vendor['is_interactive'] ?? 0) === 1): ?><span class="badge blue">Aktif</span><?php else: ?><span class="badge gray">Nonaktif</span><?php endif; ?></span></td>
                         <td data-label="Command"><code class="code-block"><?php echo htmlspecialchars($vendor['command']); ?></code></td>
                         <td data-label="Mode Interaktif" style="text-align: center;">
                             <?php if ((int)($vendor['is_interactive'] ?? 0) === 1): ?>
@@ -234,7 +234,7 @@ include __DIR__ . '/includes/header.php';
                         <td class="td-actions" data-label="Aksi" style="text-align: right;">
                             <div class="action-buttons">
                                 <a href="/edit_vendor?id=<?php echo $vendor['id']; ?>" class="btn btn-sm secondary">Edit</a>
-                                <form action="/vendors" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus vendor ini?');" class="inline">
+                                <form action="/vendors" method="POST" onsubmit="return mConfirmSubmit(event, this, 'Anda yakin ingin menghapus vendor ini?', 'Hapus');" class="inline">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="id" value="<?php echo $vendor['id']; ?>">
                                     <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(csrf_token()); ?>"> 

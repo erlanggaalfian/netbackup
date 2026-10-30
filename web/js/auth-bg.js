@@ -6,6 +6,19 @@
     if (window.__nbAuthBgStarted) return;
     window.__nbAuthBgStarted = true;
 
+    // Hemat baterai + aksesibilitas: jangan jalankan loop animasi partikel
+    // bila user memilih reduced motion, memakai perangkat sentuh, atau layar kecil.
+    function shouldAnimate() {
+        try {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+            if (window.matchMedia('(pointer: coarse)').matches) return false;
+            if (window.innerWidth <= 768) return false;
+        } catch (e) { /* matchMedia tidak tersedia -> animasi seperti biasa */ }
+        return true;
+    }
+
+    const animateEnabled = shouldAnimate();
+
     function initTilt(container) {
         if (!container) return;
         container.addEventListener('mousemove', (e) => {
@@ -115,22 +128,36 @@
             connect();
         }
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-        document.addEventListener('mouseleave', () => {
-            mouseX = null;
-            mouseY = null;
-        });
+        // Satu frame statis untuk mode hemat (tanpa requestAnimationFrame).
+        function renderStatic() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) particlesArray[i].draw();
+            connect();
+        }
+
+        if (animateEnabled) {
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            document.addEventListener('mouseleave', () => {
+                mouseX = null;
+                mouseY = null;
+            });
+        }
 
         window.addEventListener('resize', () => {
             setCanvasSize();
             init();
+            if (!animateEnabled) renderStatic();
         });
 
         init();
-        animate();
+        if (animateEnabled) {
+            animate();
+        } else {
+            renderStatic();
+        }
         initTilt(document.querySelector('.login-container'));
     }
 

@@ -32,6 +32,84 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// --- "Ingat saya": login persistent per perangkat ---
+// Cookie menyimpan token acak; di DB hanya hash SHA-256-nya (bocor DB != bisa dipakai).
+// Token dirotasi setiap dipakai dan dicabut saat logout.
+const REMEMBER_COOKIE = 'nb_remember';
+const REMEMBER_DAYS = 30;
+
+function remember_cookie_params(): array {
+    return [
+        'expires' => time() + REMEMBER_DAYS * 86400,
+        'path' => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ];
+}
+
+/** Buat token persistent setelah login sukses dengan "Ingat saya" dicentang. */
+function remember_login(PDO $pdo, int $userId): void {
+    $token = bin2hex(random_bytes(32));
+    $expires = date('Y-m-d H:i:s', time() + REMEMBER_DAYS * 86400);
+    $stmt = $pdo->prepare('INSERT INTO remember_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)');
+    $stmt->execute([$userId, hash('sha256', $token), $expires]);
+    setcookie(REMEMBER_COOKIE, $token, remember_cookie_params());
+    $_COOKIE[REMEMBER_COOKIE] = $token;
+}
+
+/**
+ * Coba pulihkan sesi dari cookie "Ingat saya".
+ * Dipanggil di setiap request sebelum halaman mengecek login.
+ * Return true jika sesi berhasil dipulihkan.
+ */
+function try_remember_login(PDO $pdo): bool {
+    $token = $_COOKIE[REMEMBER_COOKIE] ?? '';
+    if (!is_string($token) || !preg_match('/^[0-9a-f]{64}$/', $token)) {
+        return false;
+    }
+    try {
+        $hash = hash('sha256', $token);
+        $stmt = $pdo->prepare('SELECT rt.user_id, rt.expires_at, u.username, u.role
+                               FROM remember_tokens rt JOIN users u ON u.id = rt.user_id
+                               WHERE rt.token_hash = ? LIMIT 1');
+        $stmt->execute([$hash]);
+        $row = $stmt->fetch();
+        // Bersihkan token basi/tidak dikenal + cookie-nya.
+        $clear = function () use ($pdo, $hash) {
+            try { $pdo->prepare('DELETE FROM remember_tokens WHERE token_hash = ?')->execute([$hash]); } catch (Throwable $e) {}
+            setcookie(REMEMBER_COOKIE, '', time() - 3600, '/');
+            unset($_COOKIE[REMEMBER_COOKIE]);
+        };
+        if (!$row || strtotime((string)$row['expires_at']) < time()) {
+            $clear();
+            return false;
+        }
+        // Rotasi: token sekali pakai — hapus yang lama, terbitkan yang baru.
+        $clear();
+        session_regenerate_id(true);
+        $_SESSION['user'] = ['id' => (int)$row['user_id'], 'username' => $row['username'], 'role' => $row['role']];
+        remember_login($pdo, (int)$row['user_id']);
+        // Bersihkan token kedaluwarsa lain sesekali.
+        try { $pdo->exec("DELETE FROM remember_tokens WHERE expires_at < NOW()"); } catch (Throwable $e) {}
+        app_log('login_remember', 'Auto-login via Ingat saya: ' . $row['username'], (int)$row['user_id']);
+        return true;
+    } catch (Throwable $e) {
+        // Tabel belum ada (fresh install) atau DB error: abaikan, user login manual.
+        return false;
+    }
+}
+
+/** Cabut semua token persistent milik user + hapus cookie-nya (dipakai saat logout). */
+function forget_remember_login(PDO $pdo, ?int $userId): void {
+    try {
+        if ($userId) {
+            $pdo->prepare('DELETE FROM remember_tokens WHERE user_id = ?')->execute([$userId]);
+        }
+    } catch (Throwable $e) { /* abaikan */ }
+    setcookie(REMEMBER_COOKIE, '', time() - 3600, '/');
+    unset($_COOKIE[REMEMBER_COOKIE]);
+}
+
 // Aktifkan error reporting untuk development agar mudah di-debug
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -82,6 +160,11 @@ try {
     die('Error: Tidak dapat terhubung ke server database.');
 }
 
+// "Ingat saya": pulihkan sesi dari cookie persistent sebelum halaman mengecek login.
+if (empty($_SESSION['user']) && isset($_COOKIE[REMEMBER_COOKIE])) {
+    try_remember_login($pdo);
+}
+
 // --- Fungsi Helper ---
 
 function post(string $key): ?string {
@@ -124,11 +207,31 @@ function verify_csrf(?string $token): bool {
     return false;
 }
 
-function require_login(): void {
-    if (empty($_SESSION['user'])) {
-        header('Location: login.php');
-        exit;
+/**
+ * Menentukan alasan redirect ke halaman login + self-heal cookie sesi yang basi.
+ *
+ * 'expired' = browser mengirim session id tapi server tidak punya datanya
+ *             (cookie basi/rusak di perangkat itu). Cookie-nya dihapus otomatis
+ *             agar percobaan login berikutnya mulai bersih — user tidak perlu
+ *             hapus cookie manual per perangkat.
+ * 'login'   = belum pernah login / browser tidak mengirim cookie sesi.
+ */
+function login_redirect_reason(): string {
+    if (isset($_COOKIE[session_name()])) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 3600, $params['path'] ?? '/');
+        unset($_COOKIE[session_name()]);
+        return 'expired';
     }
+    return 'login';
+}
+
+function require_login(): void {
+    if (!empty($_SESSION['user'])) {
+        return;
+    }
+    header('Location: login.php?reason=' . login_redirect_reason());
+    exit;
 }
 
 function current_user(): ?array {

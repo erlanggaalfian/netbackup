@@ -86,10 +86,22 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div class="form-container motion-fade-up form-container--filter">
+  <?php
+  $logs_active = 0;
+  if (trim($filter_type ?? '') !== '') $logs_active++;
+  if (!empty($filter_device)) $logs_active++;
+  if (trim($filter_start_date ?? '') !== '') $logs_active++;
+  if (trim($filter_end_date ?? '') !== '') $logs_active++;
+  ?>
+  <button type="button" class="m-mobile-only m-filter-head" data-toggle="filter-logs" aria-expanded="false">
+      <span>Filter</span>
+      <?php if ($logs_active > 0): ?><span class="m-filter-head-count"><?= (int)$logs_active ?> aktif</span><?php endif; ?>
+  </button>
   <form method="get" class="auto-filter-form">
     <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sort_by); ?>">
     <input type="hidden" name="order" value="<?php echo htmlspecialchars($order); ?>">
     <div class="filter-form filter-form--logs">
+      <div class="m-collapsible m-filter-more" id="filter-logs">
       <div class="field">
         <label for="log-start">Dari tanggal</label>
         <input type="date" id="log-start" name="start_date" value="<?php echo htmlspecialchars($filter_start_date); ?>">
@@ -129,6 +141,7 @@ include __DIR__ . '/includes/header.php';
       <div class="filter-grid-actions">
         <?= filter_reset_link('logs.php') ?>
       </div>
+      </div>
     </div>
   </form>
 </div>
@@ -140,6 +153,9 @@ include __DIR__ . '/includes/header.php';
         <p class="page-subtitle">(Menampilkan <?php echo count($logs); ?> dari <?php echo number_format($total_rows); ?> total log)</p>
     </div>
     <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn btn-sm secondary m-mobile-only" onclick="toggleSelectAllMobile()">
+            Pilih semua
+        </button>
         <button class="btn btn-sm danger" onclick="deleteSelectedLogs()">
             Hapus Terpilih
         </button>
@@ -175,7 +191,8 @@ include __DIR__ . '/includes/header.php';
             <td class="td-check" data-label="Pilih" style="text-align: center;">
               <input type="checkbox" class="log-checkbox" value="<?php echo (int)$log['id']; ?>" style="cursor: pointer;">
             </td>
-            <td class="td-primary" data-label="Waktu"><?php echo date('d M Y, H:i:s', strtotime($log['timestamp'])); ?> &nbsp;<span class="badge <?php echo get_badge_class($log['type']); ?>"><?php echo htmlspecialchars($log['type']); ?></span></td>
+            <td class="td-primary" data-label="Waktu"><?php echo date('d M Y, H:i:s', strtotime($log['timestamp'])); ?> <span class="m-collapsed-extra"><small class="small-text-muted"><?php echo htmlspecialchars($log['actor_name'] ?? 'Sistem'); ?> · <?php echo htmlspecialchars($log['device_name'] ?? '-'); ?></small></span></td>
+            <td data-label="Tipe"><span class="badge <?php echo get_badge_class($log['type']); ?>"><?php echo htmlspecialchars($log['type']); ?></span></td>
             <td data-label="Aktor"><?php echo htmlspecialchars($log['actor_name'] ?? 'Sistem'); ?></td>
             <td data-label="Perangkat"><?php echo htmlspecialchars($log['device_name'] ?? '-'); ?></td>
             <td data-label="Detail" style="font-size: 13px;"><?php echo htmlspecialchars($log['details'] ?? $log['message'] ?? '-'); ?></td>
@@ -217,7 +234,13 @@ function toggleSelectAll(source) {
     });
 }
 
-function deleteSelectedLogs() {
+function toggleSelectAllMobile() {
+    const boxes = document.querySelectorAll('.log-checkbox');
+    const allChecked = boxes.length > 0 && Array.from(boxes).every(cb => cb.checked);
+    boxes.forEach(cb => { cb.checked = !allChecked; });
+}
+
+async function deleteSelectedLogs() {
     const checkedBoxes = document.querySelectorAll('.log-checkbox:checked');
     const selectedIds = Array.from(checkedBoxes).map(cb => cb.value);
 
@@ -226,7 +249,17 @@ function deleteSelectedLogs() {
         return;
     }
 
-    if (!confirm(`Anda yakin ingin menghapus ${selectedIds.length} log terpilih?`)) return;
+    if (!window.mConfirm) {
+        if (!confirm(`Anda yakin ingin menghapus ${selectedIds.length} log terpilih?`)) return;
+    } else {
+        var confirmed = await window.mConfirm({
+            title: 'Hapus log terpilih?',
+            message: selectedIds.length + ' log akan dihapus secara permanen.',
+            confirmText: 'Hapus',
+            danger: true
+        });
+        if (!confirmed) return;
+    }
 
     fetch('api_clear_logs', {
         method: 'POST',
@@ -251,8 +284,18 @@ function deleteSelectedLogs() {
     });
 }
 
-function clearAllLogs() {
-    if (!confirm('PERINGATAN: Anda yakin ingin mengosongkan SELURUH tabel log secara permanen? Aksi ini tidak dapat dibatalkan.')) return;
+async function clearAllLogs() {
+    if (!window.mConfirm) {
+        if (!confirm('PERINGATAN: Anda yakin ingin mengosongkan SELURUH tabel log secara permanen? Aksi ini tidak dapat dibatalkan.')) return;
+    } else {
+        var confirmed = await window.mConfirm({
+            title: 'Kosongkan semua log?',
+            message: 'PERINGATAN: SELURUH tabel log akan dikosongkan secara permanen. Aksi ini tidak dapat dibatalkan.',
+            confirmText: 'Kosongkan',
+            danger: true
+        });
+        if (!confirmed) return;
+    }
     
     fetch('api_clear_logs', {
         method: 'POST',

@@ -125,6 +125,12 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div class="form-container motion-fade-up form-container--filter">
+    <?php $filter_active_count = ((isset($view_all) && !$view_all) ? 1 : 0) + (trim($search ?? '') !== '' ? 1 : 0); ?>
+    <button type="button" class="m-mobile-only m-filter-head" data-toggle="filter-devices-scope filter-devices-main" aria-expanded="false">
+        <span>Filter</span>
+        <?php if ($filter_active_count > 0): ?><span class="m-filter-head-count"><?= (int)$filter_active_count ?> aktif</span><?php endif; ?>
+    </button>
+    <div class="m-collapsible m-filter-more" id="filter-devices-scope">
     <div class="filter-grid filter-grid--scope">
         <div class="field">
             <label>Site</label>
@@ -150,6 +156,7 @@ include __DIR__ . '/includes/header.php';
         </div>
     </div>
     <hr class="filter-divider">
+    </div>
     <form method="get" class="auto-filter-form">
         <?php if (!$view_all): ?>
             <input type="hidden" name="type" value="<?= htmlspecialchars($filter_type) ?>">
@@ -160,8 +167,9 @@ include __DIR__ . '/includes/header.php';
         <div class="filter-grid filter-grid--toolbar">
             <div class="field">
                 <label for="device-search">Cari perangkat</label>
-                <input type="text" id="device-search" name="search" placeholder="Nama perangkat, IP, atau lokasi…" value="<?= htmlspecialchars($search) ?>">
+                <input type="text" id="device-search" name="search" enterkeyhint="search" placeholder="Nama perangkat, IP, atau lokasi…" value="<?= htmlspecialchars($search) ?>">
             </div>
+            <div class="m-collapsible m-filter-more" id="filter-devices-main">
             <div class="field">
                 <label for="device-limit">Baris per halaman</label>
                 <select id="device-limit" name="limit">
@@ -171,6 +179,7 @@ include __DIR__ . '/includes/header.php';
             <div class="filter-grid-actions">
                 <?= filter_reset_link($view_all ? 'devices.php' : "devices.php?type=$filter_type&id=$filter_id") ?>
             </div>
+            </div>
         </div>
     </form>
 </div>
@@ -179,6 +188,7 @@ include __DIR__ . '/includes/header.php';
         <div class="table-header">
             <h2 class="table-title">Daftar Perangkat <br><p class="page-subtitle">(Menampilkan <?= count($devices) ?> dari <?= $total_rows ?> Perangkat)</p></h2>
             <div class="bulk-actions">
+                <button type="button" class="btn btn-sm secondary m-mobile-only" id="mobile-select-all-btn">Pilih semua</button>
                 <button onclick="bulkAction('delete')" class="btn btn-sm danger" disabled id="bulk-delete-btn">
                     <span>Hapus Terpilih</span>
                 </button>
@@ -219,6 +229,11 @@ include __DIR__ . '/includes/header.php';
                             <td class="td-primary" data-label="Perangkat">
                                 <strong><?= htmlspecialchars($d['name']) ?></strong><br>
                                 <small class="small-text-muted"><?= htmlspecialchars($d['ip']) ?></small>
+                                <?php
+                                    $icmpDotClass = $icmpState === 'up' ? 'is-up' : ($icmpState === 'down' ? 'is-down' : 'is-unknown');
+                                    $sshDotClass = $icState === 'up' ? 'is-up' : ($icState === 'down' ? 'is-down' : 'is-unknown');
+                                ?>
+                                <span class="m-collapsed-extra"><span class="m-dot <?= $icmpDotClass ?>" id="icmp-dot-<?= (int)$d['id'] ?>" title="ICMP: <?= htmlspecialchars($icmpState) ?>"></span><span class="m-dot <?= $sshDotClass ?>" id="ssh-dot-<?= (int)$d['id'] ?>" title="SSH: <?= htmlspecialchars($icState) ?>"></span></span>
                             </td>
                             <td data-label="Lokasi"><?= htmlspecialchars($d['location'] ?? '-') ?></td>
                             <td data-label="Vendor"><span class="badge blue"><?= htmlspecialchars($d['vendor_name'] ?? 'N/A') ?></span></td>
@@ -237,7 +252,7 @@ include __DIR__ . '/includes/header.php';
                                     <button class="btn btn-sm" title="Refresh" onclick="checkDeviceStatus(<?= (int)$d['id'] ?>, this)">Refresh</button>
                                     <button class="btn btn-sm" title="Backup" onclick="manualBackup(<?= (int)$d['id'] ?>, '<?= htmlspecialchars(addslashes($d['name'])) ?>', this)">Backup</button>
                                     <a class="btn btn-sm secondary" href="edit_device.php?id=<?= $d['id'] ?>">Ubah</a>
-                                    <form method="POST" onsubmit="return confirm('Hapus perangkat ini?');" class="inline">
+                                    <form method="POST" onsubmit="return mConfirmSubmit(event, this, 'Hapus perangkat ini?', 'Hapus');" class="inline">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<?= (int)$d['id'] ?>">
                                         <input type="hidden" name="csrf" value="<?= htmlspecialchars(csrf_token()); ?>">
@@ -268,8 +283,27 @@ include __DIR__ . '/includes/header.php';
 <input type="hidden" id="csrf-token" value="<?= htmlspecialchars(csrf_token()); ?>">
 
 <script>
+// Fallback until footer.php exposes the bottom-sheet confirm (parallel agent);
+// the footer's window.mConfirmSubmit / window.mConfirm override these when loaded.
+if (typeof window.mConfirmSubmit !== 'function') {
+    window.mConfirmSubmit = function (e, form, message /*, confirmText */) {
+        if (!window.confirm(message)) { if (e) e.preventDefault(); return false; }
+        return true;
+    };
+}
+function mConfirmAsync(opts) {
+    if (typeof window.mConfirm === 'function') return window.mConfirm(opts);
+    return Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Lanjutkan?'));
+}
+
 const CONNECTIVITY_POLL_MS = <?php echo (int)DEVICE_CONNECTIVITY_TTL * 1000; ?>;
 const visibleDeviceIds = <?= json_encode(array_map(static fn($d) => (int)$d['id'], $devices), JSON_THROW_ON_ERROR) ?>;
+
+function stateLabel(state) {
+    if (state === 'up') return 'OK';
+    if (state === 'down') return 'Mati';
+    return 'Tidak diketahui';
+}
 
 function applyDeviceStatus(deviceId, device) {
     const icmpElement = document.getElementById(`icmp-status-${deviceId}`);
@@ -290,6 +324,17 @@ function applyDeviceStatus(deviceId, device) {
         } else {
             sshElement.innerHTML = `<span class="badge danger">${proto}: Gagal</span>`;
         }
+    }
+    const icmpDot = document.getElementById(`icmp-dot-${deviceId}`);
+    if (icmpDot) {
+        icmpDot.className = 'm-dot ' + (device.icmp === 'up' ? 'is-up' : (device.icmp === 'down' ? 'is-down' : 'is-unknown'));
+        icmpDot.title = 'ICMP: ' + stateLabel(device.icmp);
+    }
+    const sshDot = document.getElementById(`ssh-dot-${deviceId}`);
+    if (sshDot) {
+        const proto = device.protocol || 'SSH';
+        sshDot.className = 'm-dot ' + (device.interconnect === 'up' ? 'is-up' : (device.interconnect === 'down' ? 'is-down' : 'is-unknown'));
+        sshDot.title = proto + ': ' + stateLabel(device.interconnect);
     }
 }
 
@@ -312,6 +357,10 @@ async function loadPageConnectivity(showLoader = false) {
                 const sshElement = document.getElementById(`ssh-status-${deviceId}`);
                 if (icmpElement) icmpElement.innerHTML = '<span class="badge gray">ICMP: —</span>';
                 if (sshElement) sshElement.innerHTML = '<span class="badge gray">SSH: —</span>';
+                const icmpDot = document.getElementById(`icmp-dot-${deviceId}`);
+                if (icmpDot) { icmpDot.className = 'm-dot is-unknown'; icmpDot.title = 'ICMP: Tidak diketahui'; }
+                const sshDot = document.getElementById(`ssh-dot-${deviceId}`);
+                if (sshDot) { sshDot.className = 'm-dot is-unknown'; sshDot.title = 'SSH: Tidak diketahui'; }
             });
         }
     }
@@ -352,10 +401,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectAll = document.getElementById('select-all-checkbox');
     const itemCheckboxes = document.querySelectorAll('.device-checkbox');
     const deleteBtn = document.getElementById('bulk-delete-btn');
+    const mobileSelectAllBtn = document.getElementById('mobile-select-all-btn');
 
     function updateBulkButtons() {
-        const anyChecked = document.querySelectorAll('.device-checkbox:checked').length > 0;
-        if (deleteBtn) deleteBtn.disabled = !anyChecked;
+        const boxes = document.querySelectorAll('.device-checkbox');
+        const checkedCount = document.querySelectorAll('.device-checkbox:checked').length;
+        if (deleteBtn) deleteBtn.disabled = !(checkedCount > 0);
+        if (mobileSelectAllBtn) mobileSelectAllBtn.textContent = (boxes.length > 0 && checkedCount === boxes.length) ? 'Batal pilih' : 'Pilih semua';
     }
 
     if (selectAll) {
@@ -372,25 +424,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    if (mobileSelectAllBtn) {
+        mobileSelectAllBtn.addEventListener('click', function() {
+            const boxes = document.querySelectorAll('.device-checkbox');
+            const allChecked = boxes.length > 0 && Array.from(boxes).every(function(cb){ return cb.checked; });
+            boxes.forEach(function(cb){ cb.checked = !allChecked; });
+            if (selectAll) selectAll.checked = !allChecked;
+            updateBulkButtons();
+        });
+    }
+
     setInterval(function () { loadPageConnectivity(false); }, CONNECTIVITY_POLL_MS);
 });
 
 function bulkAction(action) {
     const checked = document.querySelectorAll('.device-checkbox:checked');
     if (!checked.length) return;
-    if (!confirm(`Anda yakin ingin menghapus ${checked.length} perangkat? Semua riwayat backup juga akan terhapus.`)) return;
-    
-    const form = document.getElementById('bulk-form');
-    document.getElementById('bulk-action-type').value = action;
-    
-    checked.forEach(cb => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'selected_ids[]';
-        input.value = cb.value;
-        form.appendChild(input);
-    });
-    form.submit();
+    const submitBulk = function() {
+        const form = document.getElementById('bulk-form');
+        document.getElementById('bulk-action-type').value = action;
+
+        checked.forEach(cb => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_ids[]';
+            input.value = cb.value;
+            form.appendChild(input);
+        });
+        form.submit();
+    };
+    if (action === 'delete') {
+        mConfirmAsync({ message: `Anda yakin ingin menghapus ${checked.length} perangkat? Semua riwayat backup juga akan terhapus.`, confirmText: 'Hapus', danger: true })
+            .then(function(ok){ if (ok) submitBulk(); });
+        return;
+    }
+    submitBulk();
 }
 </script>
 

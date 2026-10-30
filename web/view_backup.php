@@ -61,6 +61,8 @@ include __DIR__ . '/includes/header.php';
                 </span>
             </span>
         </div>
+        <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="backup-extra-meta" data-show-text="Detail lainnya" data-hide-text="Sembunyikan" aria-expanded="false">Detail lainnya</button>
+        <div class="m-collapsible" id="backup-extra-meta">
         <?php if (!empty($row['filename'])) : ?>
         <div class="backup-meta-chip backup-meta-chip-wide">
             <span class="backup-meta-chip-label">Berkas</span>
@@ -71,6 +73,7 @@ include __DIR__ . '/includes/header.php';
             <span class="backup-meta-chip-label">Ukuran</span>
             <span class="backup-meta-chip-value"><?php echo number_format($configLines); ?> baris · <?php echo number_format($configBytes); ?> byte</span>
         </div>
+        </div>
     </div>
 
     <div class="backup-view-toolbar">
@@ -78,6 +81,7 @@ include __DIR__ . '/includes/header.php';
             <input type="search" id="search-input" placeholder="Cari teks dalam konfigurasi…" autocomplete="off" enterkeyhint="search">
             <button type="button" id="search-btn" class="btn btn-sm">Cari</button>
         </div>
+        <button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="backup-config-body" data-show-text="Tampilkan isi konfigurasi" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan isi konfigurasi</button>
         <div class="backup-view-toolbar-actions">
             <span id="search-count" class="backup-view-count" aria-live="polite">0 / 0</span>
             <button type="button" id="prev-btn" class="btn btn-sm secondary" disabled aria-label="Hasil sebelumnya">‹</button>
@@ -89,12 +93,14 @@ include __DIR__ . '/includes/header.php';
         </div>
     </div>
 
+    <div class="m-collapsible" id="backup-config-body">
     <div class="config-viewer backup-config-viewer">
         <?php if ($configText === '') : ?>
             <p class="backup-config-empty">Tidak ada isi konfigurasi tersimpan untuk backup ini.</p>
         <?php else : ?>
             <pre id="config-content" class="backup-config-pre"><?php echo htmlspecialchars($configText); ?></pre>
         <?php endif; ?>
+    </div>
     </div>
 </div>
 
@@ -186,6 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
         lastTerm = (searchInput.value || '').trim();
         activeIndex = lastTerm ? 0 : -1;
         renderContent();
+        document.getElementById('backup-config-body')?.classList.add('is-open');
     }
 
     function stepMatch(delta) {

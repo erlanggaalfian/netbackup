@@ -156,14 +156,20 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div class="form-container form-container--filter">
+    <?php $sched_active = (trim($search ?? '') !== '' ? 1 : 0) + (trim($schedule_filter ?? '') !== '' ? 1 : 0) + (trim($status_filter ?? '') !== '' ? 1 : 0); ?>
+    <button type="button" class="m-mobile-only m-filter-head" data-toggle="filter-schedule" aria-expanded="false">
+        <span>Filter</span>
+        <?php if ($sched_active > 0): ?><span class="m-filter-head-count"><?= (int)$sched_active ?> aktif</span><?php endif; ?>
+    </button>
     <form method="get" class="auto-filter-form">
         <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sort_by); ?>">
         <input type="hidden" name="order" value="<?php echo htmlspecialchars($order); ?>">
         <div class="filter-grid filter-grid--toolbar-wide">
             <div class="field">
                 <label for="schedule-search">Cari jadwal</label>
-                <input type="text" id="schedule-search" name="search" placeholder="Nama perangkat atau alamat IP…" value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" id="schedule-search" name="search" placeholder="Nama perangkat atau alamat IP…" value="<?php echo htmlspecialchars($search); ?>" enterkeyhint="search">
             </div>
+            <div class="m-collapsible m-filter-more" id="filter-schedule">
             <div class="field">
                 <label for="schedule-freq">Frekuensi</label>
                 <select id="schedule-freq" name="schedule_filter">
@@ -189,6 +195,7 @@ include __DIR__ . '/includes/header.php';
             </div>
             <div class="filter-grid-actions">
                 <?= filter_reset_link('/schedule') ?>
+            </div>
             </div>
         </div>
     </form>
@@ -232,6 +239,14 @@ include __DIR__ . '/includes/header.php';
             <td class="td-primary" data-label="Perangkat">
               <strong><?php echo htmlspecialchars($r['device_name']); ?></strong><br>
               <small class="small-text-muted"><?php echo htmlspecialchars($r['ip']); ?></small>
+              <?php
+                $schedLabels = ['daily' => 'Harian', 'weekly' => 'Mingguan', 'monthly' => 'Bulanan'];
+                $schedKey = (string)($r['schedule'] ?? 'daily');
+                $schedLabel = $schedLabels[$schedKey] ?? $schedKey;
+                $hourLabel = str_pad((string)(int)($r['run_hour'] ?? 2), 2, '0', STR_PAD_LEFT) . ':00';
+                $activeLabel = ((int)($r['active'] ?? 1) === 1) ? 'Aktif' : 'Nonaktif';
+              ?>
+              <span class="m-collapsed-extra"><br><?php echo htmlspecialchars($schedLabel . ' · ' . $hourLabel . ' · ' . $activeLabel); ?></span>
             </td>
             <td class="td-field" data-label="Frekuensi">
               <select name="schedule[<?php echo $did; ?>]" class="schedule-select track-input">

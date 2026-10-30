@@ -23,6 +23,32 @@ if ($stmt->fetchColumn() == 0) {
     exit;
 }
 
+// User yang sudah login tidak perlu melihat form login lagi.
+if (!empty($_SESSION['user'])) {
+    header('Location: /dashboard');
+    exit;
+}
+
+// Self-heal: yang membuka halaman login langsung (mis. bookmark) dengan
+// cookie sesi basi ikut dibersihkan di sini.
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_COOKIE[session_name()])) {
+    login_redirect_reason();
+}
+
+// Pesan penjelasan kenapa user dilempar ke halaman login (hanya saat GET,
+// agar tidak dobel dengan pesan error hasil POST).
+$notice = '';
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $reason = $_GET['reason'] ?? '';
+    if ($reason === 'expired') {
+        $notice = 'Sesi kamu sudah tidak berlaku (data sesi yang basi di perangkat ini sudah dibersihkan otomatis). Silakan login kembali.';
+    } elseif ($reason === 'login') {
+        $notice = 'Silakan login untuk melanjutkan.';
+    } elseif ($reason === 'logout') {
+        $notice = 'Kamu berhasil keluar. Sampai jumpa!';
+    }
+}
+
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf(post('csrf'))) {
@@ -35,7 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$username]);
             $user = $stmt->fetch();
             if ($user && password_verify($password, $user['password_hash'])) {
+                // ID sesi baru yang fresh (best practice + menghindari sesi basi).
+                session_regenerate_id(true);
                 $_SESSION['user'] = [ 'id' => $user['id'], 'username' => $user['username'], 'role' => $user['role'] ];
+                if (post('remember')) {
+                    remember_login($pdo, (int)$user['id']);
+                }
                 app_log('login_success', 'User logged in: ' . $user['username'], $user['id']);
                 header('Location: /dashboard');
                 exit;
@@ -54,10 +85,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0097FC">
   <title>NetBackup - Login</title>
   <link rel="icon" type="image/png" href="/img/logo.png">
   <link rel="shortcut icon" type="image/png" href="/img/logo.png">
+  <link rel="apple-touch-icon" href="/img/logo.png">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/style/global.css?v=2.10.0_auth_bg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,6 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <?php if ($error): ?>
     <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+  <?php endif; ?>
+  <?php if ($notice): ?>
+    <div class="alert info"><?php echo htmlspecialchars($notice); ?></div>
   <?php endif; ?>
 
   <form method="post">

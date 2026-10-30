@@ -6,6 +6,9 @@ if (current_user()) {
     app_log('logout', 'User logged out: ' . current_user()['username'], current_user()['id']);
 }
 
+// Cabut token "Ingat saya" agar tidak auto-login lagi setelah keluar.
+forget_remember_login($pdo, current_user()['id'] ?? null);
+
 // Unset all session values
 $_SESSION = [];
 
@@ -13,7 +16,7 @@ $_SESSION = [];
 session_destroy();
 
 // Redirect to login page after 3 seconds
-header('Refresh: 3; url=/login');
+header('Refresh: 3; url=/login?reason=logout');
 ?>
 <!DOCTYPE html>
 <html lang="id">

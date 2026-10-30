@@ -19,7 +19,7 @@ if (!has_admin_user()) {
     
     // Jika path kosong (root), langsung redirect ke /login
     if ($request_path === '') {
-        header('Location: /login');
+        header('Location: /login?reason=' . login_redirect_reason());
         exit;
     }
     
@@ -28,7 +28,7 @@ if (!has_admin_user()) {
         $page_to_load = $request_path . '.php';
     } else {
         // Untuk semua halaman lain, paksa redirect ke /login
-        header('Location: /login');
+        header('Location: /login?reason=' . login_redirect_reason());
         exit;
     }
 

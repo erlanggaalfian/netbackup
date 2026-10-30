@@ -189,6 +189,12 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div class="form-container motion-fade-up form-container--filter">
+    <?php $filter_active_count = (isset($view_all) && !$view_all ? 1 : 0) + (trim($search ?? '') !== '' ? 1 : 0); ?>
+    <button type="button" class="m-mobile-only m-filter-head" data-toggle="filter-backups-scope filter-backups-main" aria-expanded="false">
+        <span>Filter</span>
+        <?php if ($filter_active_count > 0): ?><span class="m-filter-head-count"><?= (int)$filter_active_count ?> aktif</span><?php endif; ?>
+    </button>
+    <div class="m-collapsible m-filter-more" id="filter-backups-scope">
     <div class="filter-grid filter-grid--scope">
         <div class="field">
             <label>Site</label>
@@ -214,6 +220,7 @@ include __DIR__ . '/includes/header.php';
         </div>
     </div>
     <hr class="filter-divider">
+    </div>
     <form method="get" class="auto-filter-form" data-debounce="700" data-min-chars="2">
         <?php if (!$view_all): ?>
             <input type="hidden" name="type" value="<?= htmlspecialchars($filter_type) ?>">
@@ -225,8 +232,9 @@ include __DIR__ . '/includes/header.php';
         <div class="filter-grid filter-grid--toolbar">
             <div class="field">
                 <label for="backup-search">Cari riwayat</label>
-                <input type="text" id="backup-search" name="search" placeholder="Nama file, perangkat, atau IP…" value="<?= htmlspecialchars($search) ?>">
+                <input type="text" id="backup-search" name="search" enterkeyhint="search" placeholder="Nama file, perangkat, atau IP…" value="<?= htmlspecialchars($search) ?>">
             </div>
+            <div class="m-collapsible m-filter-more" id="filter-backups-main">
             <div class="field">
                 <label for="backup-limit">Baris per halaman</label>
                 <select id="backup-limit" name="limit">
@@ -235,6 +243,7 @@ include __DIR__ . '/includes/header.php';
             </div>
             <div class="filter-grid-actions">
                 <?= filter_reset_link($view_all ? 'backups.php' : "backups.php?type=$filter_type&id=$filter_id") ?>
+            </div>
             </div>
         </div>
     </form>
@@ -246,6 +255,7 @@ include __DIR__ . '/includes/header.php';
                 Menampilkan <?= count($backups) ?> dari <?= number_format($total_rows) ?> data
             )</p></h2>
             <div class="bulk-actions">
+                <button type="button" class="btn btn-sm secondary m-mobile-only" id="mobile-select-all-btn">Pilih semua</button>
                 <button onclick="bulkAction('delete')" class="btn btn-sm danger" disabled id="bulk-delete-btn">
                     <span>Hapus Terpilih</span>
                 </button>
@@ -281,7 +291,7 @@ include __DIR__ . '/includes/header.php';
                         <tr>
                             <td class="td-check" data-label="Pilih"><input type="checkbox" class="backup-checkbox" name="selected_backups[]" value="<?= (int)$b['id'] ?>"></td>
                             <td data-label="Waktu"><span class="text-muted-sm"><?= date('d M Y, H:i', strtotime($b['timestamp'])) ?></span></td>
-                            <td class="td-primary" data-label="Perangkat"><strong><?= htmlspecialchars($b['device_name']) ?></strong><br><small class="small-text-muted"><?= htmlspecialchars($b['ip']) ?></small></td>
+                            <td class="td-primary" data-label="Perangkat"><strong><?= htmlspecialchars($b['device_name']) ?></strong><br><small class="small-text-muted"><?= htmlspecialchars($b['ip']) ?></small><br><span class="m-collapsed-extra"><small class="small-text-muted"><?= date('d M Y, H:i', strtotime($b['timestamp'])) ?> · </small><span class="badge <?= $b['status']==='success' ? 'success' : 'danger' ?>"><?= $b['status']==='success' ? 'Berhasil' : 'Gagal' ?></span></span></td>
                             <td data-label="Status"><span class="badge <?= $b['status']==='success' ? 'success' : 'danger' ?>"><?= $b['status']==='success' ? 'Berhasil' : 'Gagal' ?></span></td>
                             <td class="td-mono" data-label="Nama File"><?= htmlspecialchars($b['filename']) ?></td>
                             <td class="td-actions" data-label="Aksi">
@@ -290,7 +300,7 @@ include __DIR__ . '/includes/header.php';
                                     <?php if ($b['status'] === 'success'): ?>
                                         <a class="btn btn-sm" href="download.php?id=<?= (int)$b['id'] ?>">Download</a>
                                     <?php endif; ?>
-                                    <form method="POST" onsubmit="return confirm('Hapus backup ini?');" class="inline">
+                                    <form method="POST" onsubmit="return mConfirmSubmit(event, this, 'Hapus backup ini?', 'Hapus');" class="inline">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="backup_id" value="<?= (int)$b['id'] ?>">
                                         <input type="hidden" name="csrf" value="<?= htmlspecialchars(csrf_token()); ?>">
@@ -327,16 +337,33 @@ include __DIR__ . '/includes/header.php';
 ?>
 
 <script>
+// Fallback until footer.php exposes the bottom-sheet confirm (parallel agent);
+// the footer's window.mConfirmSubmit / window.mConfirm override these when loaded.
+if (typeof window.mConfirmSubmit !== 'function') {
+    window.mConfirmSubmit = function (e, form, message /*, confirmText */) {
+        if (!window.confirm(message)) { if (e) e.preventDefault(); return false; }
+        return true;
+    };
+}
+function mConfirmAsync(opts) {
+    if (typeof window.mConfirm === 'function') return window.mConfirm(opts);
+    return Promise.resolve(window.confirm(opts && opts.message ? opts.message : 'Lanjutkan?'));
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const selectAll = document.getElementById('select-all-checkbox');
     const itemCheckboxes = document.querySelectorAll('.backup-checkbox');
     const deleteBtn = document.getElementById('bulk-delete-btn');
     const downloadBtn = document.getElementById('bulk-download-btn');
+    const mobileSelectAllBtn = document.getElementById('mobile-select-all-btn');
 
     function updateBulkButtons() {
-        const anyChecked = document.querySelectorAll('.backup-checkbox:checked').length > 0;
+        const boxes = document.querySelectorAll('.backup-checkbox');
+        const checkedCount = document.querySelectorAll('.backup-checkbox:checked').length;
+        const anyChecked = checkedCount > 0;
         if (deleteBtn) deleteBtn.disabled = !anyChecked;
         if (downloadBtn) downloadBtn.disabled = !anyChecked;
+        if (mobileSelectAllBtn) mobileSelectAllBtn.textContent = (boxes.length > 0 && checkedCount === boxes.length) ? 'Batal pilih' : 'Pilih semua';
     }
 
     if (selectAll) {
@@ -352,25 +379,40 @@ document.addEventListener('DOMContentLoaded', function() {
             updateBulkButtons();
         });
     });
+
+    if (mobileSelectAllBtn) {
+        mobileSelectAllBtn.addEventListener('click', function() {
+            const boxes = document.querySelectorAll('.backup-checkbox');
+            const allChecked = boxes.length > 0 && Array.from(boxes).every(function(cb){ return cb.checked; });
+            boxes.forEach(function(cb){ cb.checked = !allChecked; });
+            if (selectAll) selectAll.checked = !allChecked;
+            updateBulkButtons();
+        });
+    }
 });
 
 function bulkAction(action) {
     const checked = document.querySelectorAll('.backup-checkbox:checked');
     if (!checked.length) return;
-    const actionText = action === 'delete' ? 'menghapus' : 'mendownload';
-    if (!confirm(`Anda yakin ingin ${actionText} ${checked.length} backup terpilih?`)) return;
-    
-    const form = document.getElementById('bulk-form');
-    document.getElementById('bulk-action-type').value = action;
-    
-    checked.forEach(cb => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'selected_backups[]';
-        input.value = cb.value;
-        form.appendChild(input);
-    });
-    form.submit();
+    const submitBulk = function() {
+        const form = document.getElementById('bulk-form');
+        document.getElementById('bulk-action-type').value = action;
+
+        checked.forEach(cb => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_backups[]';
+            input.value = cb.value;
+            form.appendChild(input);
+        });
+        form.submit();
+    };
+    if (action === 'delete') {
+        mConfirmAsync({ message: `Anda yakin ingin menghapus ${checked.length} backup terpilih?`, confirmText: 'Hapus', danger: true })
+            .then(function(ok){ if (ok) submitBulk(); });
+        return;
+    }
+    submitBulk();
 }
 </script>
 

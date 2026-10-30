@@ -342,8 +342,10 @@ include __DIR__ . '/includes/header.php';
                 '</a></li>';
         }).join('');
         return '<div class="connectivity-fail-section">' +
-            '<div class="connectivity-fail-heading">Ping gagal (' + devices.length + ')</div>' +
-            '<ul class="connectivity-fail-list">' + items + '</ul></div>';
+            '<div class="connectivity-fail-heading">Ping gagal (' + devices.length + ')' +
+            '<button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="conn-fail-ping" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>' +
+            '<div class="m-collapsible" id="conn-fail-ping">' +
+            '<ul class="connectivity-fail-list">' + items + '</ul></div></div>';
     }
 
     function renderInterconnectFailList(devices) {
@@ -358,8 +360,10 @@ include __DIR__ . '/includes/header.php';
                 '</a></li>';
         }).join('');
         return '<div class="connectivity-fail-section">' +
-            '<div class="connectivity-fail-heading">Koneksi gagal (' + devices.length + ')</div>' +
-            '<ul class="connectivity-fail-list">' + items + '</ul></div>';
+            '<div class="connectivity-fail-heading">Koneksi gagal (' + devices.length + ')' +
+            '<button type="button" class="btn btn-sm secondary m-mobile-only" data-toggle="conn-fail-interconnect" data-show-text="Tampilkan" data-hide-text="Sembunyikan" aria-expanded="false">Tampilkan</button></div>' +
+            '<div class="m-collapsible" id="conn-fail-interconnect">' +
+            '<ul class="connectivity-fail-list">' + items + '</ul></div></div>';
     }
 
     function applyConnectivityData(payload) {

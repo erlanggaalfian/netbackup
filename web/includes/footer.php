@@ -74,6 +74,28 @@
             }
         }
     });
+
+    // Shared mobile collapsed-first disclosure: [data-toggle] buttons
+    // data-toggle accepts space-separated IDs; each target toggles .is-open.
+    // Keep aria-expanded in sync, swap text-only labels.
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-toggle]');
+        if (!btn) return;
+        var ids = (btn.getAttribute('data-toggle') || '').split(/\s+/).filter(Boolean);
+        if (!ids.length) return;
+        var isOpen = false;
+        ids.forEach(function (id) {
+            var target = document.getElementById(id);
+            if (!target) return;
+            isOpen = target.classList.toggle('is-open');
+        });
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        const showText = btn.getAttribute('data-show-text');
+        const hideText = btn.getAttribute('data-hide-text');
+        if (showText !== null || hideText !== null) {
+            btn.textContent = isOpen ? (hideText !== null ? hideText : showText) : (showText !== null ? showText : hideText);
+        }
+    });
 })();
 </script>
 
@@ -341,6 +363,89 @@ window.showSkeleton = function(container) {
 window.hideSkeleton = function(container) {
     if (!container || !container.dataset.origHtml) return;
     container.innerHTML = container.dataset.origHtml;
+};
+
+/* Shared bottom-sheet confirm — replaces native confirm() for destructive actions.
+   window.mConfirm({title, message, confirmText, cancelText, danger}) -> Promise<boolean>
+   window.mConfirmSubmit(e, form, message, confirmText) — drop-in for onsubmit="return confirm('…')" */
+window.mConfirm = function(opts) {
+    opts = opts || {};
+    return new Promise(function(resolve) {
+        var overlay = document.createElement('div');
+        overlay.className = 'm-confirm-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+
+        var sheet = document.createElement('div');
+        sheet.className = 'm-confirm-sheet';
+
+        var title = document.createElement('h3');
+        title.className = 'm-confirm-title';
+        title.textContent = opts.title || 'Konfirmasi';
+
+        var msg = document.createElement('p');
+        msg.className = 'm-confirm-message';
+        msg.textContent = opts.message || 'Apakah Anda yakin?';
+
+        var actions = document.createElement('div');
+        actions.className = 'm-confirm-actions';
+
+        var okBtn = document.createElement('button');
+        okBtn.type = 'button';
+        okBtn.className = 'btn' + (opts.danger === false ? '' : ' danger');
+        okBtn.textContent = opts.confirmText || 'Ya';
+
+        var cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'btn secondary';
+        cancelBtn.textContent = opts.cancelText || 'Batal';
+
+        actions.appendChild(okBtn);
+        actions.appendChild(cancelBtn);
+        sheet.appendChild(title);
+        sheet.appendChild(msg);
+        sheet.appendChild(actions);
+        overlay.appendChild(sheet);
+        document.body.appendChild(overlay);
+
+        var done = false;
+        function close(val) {
+            if (done) return;
+            done = true;
+            overlay.classList.remove('is-open');
+            document.removeEventListener('keydown', onKey);
+            setTimeout(function() {
+                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+            }, 260);
+            resolve(val);
+        }
+        function onKey(e) {
+            if (e.key === 'Escape') close(false);
+        }
+        okBtn.addEventListener('click', function() { close(true); });
+        cancelBtn.addEventListener('click', function() { close(false); });
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) close(false);
+        });
+        document.addEventListener('keydown', onKey);
+
+        void overlay.offsetWidth; /* reflow so the enter transition plays */
+        overlay.classList.add('is-open');
+        cancelBtn.focus();
+    });
+};
+
+window.mConfirmSubmit = function(e, form, message, confirmText) {
+    if (e && e.preventDefault) e.preventDefault();
+    window.mConfirm({
+        title: 'Konfirmasi',
+        message: message,
+        confirmText: confirmText || 'Ya',
+        danger: true
+    }).then(function(ok) {
+        if (ok && form && typeof form.submit === 'function') form.submit();
+    });
+    return false;
 };
 </script>
 </body>

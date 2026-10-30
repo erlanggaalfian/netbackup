@@ -109,3 +109,19 @@ CREATE TABLE IF NOT EXISTS `logs` (
 
 -- Indeks performa (penting saat backup ribuan+ baris)
 -- Indeks sudah didefinisikan di CREATE TABLE.
+
+-- 10. Tabel Remember Tokens ("Ingat saya" — login persistent per perangkat)
+-- Token disimpan sebagai hash SHA-256 (bocor DB != bisa dipakai login),
+-- satu user boleh punya banyak token (multi perangkat), ada kedaluwarsa,
+-- dan dirotasi setiap dipakai. Dibuat otomatis oleh update_server.sh.
+CREATE TABLE IF NOT EXISTS `remember_tokens` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `token_hash` CHAR(64) NOT NULL,
+  `expires_at` DATETIME NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uq_token_hash` (`token_hash`),
+  KEY `ix_user_id` (`user_id`),
+  KEY `ix_expires_at` (`expires_at`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

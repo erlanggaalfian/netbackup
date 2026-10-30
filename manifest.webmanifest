@@ -1,0 +1,18 @@
+{
+    "background_color": "#ffffff",
+    "description": "Manajemen Backup Perangkat Jaringan",
+    "display": "standalone",
+    "icons": [
+        {
+            "purpose": "any",
+            "sizes": "any",
+            "src": "/img/logo.png",
+            "type": "image/png"
+        }
+    ],
+    "name": "NetBackup",
+    "scope": "/",
+    "short_name": "NetBackup",
+    "start_url": "/",
+    "theme_color": "#0097FC"
+}

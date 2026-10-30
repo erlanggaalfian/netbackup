@@ -215,14 +215,20 @@ include __DIR__ . '/includes/header.php';
 
 
 <div class="form-container motion-fade-up form-container--filter">
+    <?php $user_filter_active = (trim($search ?? '') !== '' ? 1 : 0) + (trim($role ?? '') !== '' ? 1 : 0); ?>
+    <button type="button" class="m-mobile-only m-filter-head" data-toggle="filter-settings-users" aria-expanded="false">
+        <span>Filter</span>
+        <?php if ($user_filter_active > 0): ?><span class="m-filter-head-count"><?= (int)$user_filter_active ?> aktif</span><?php endif; ?>
+    </button>
     <form method="get" class="auto-filter-form">
         <input type="hidden" name="sort" value="<?php echo htmlspecialchars($user_sort); ?>">
         <input type="hidden" name="order" value="<?php echo htmlspecialchars($user_order); ?>">
         <div class="filter-grid filter-grid--toolbar-2">
             <div class="field">
                 <label for="user-search">Cari pengguna</label>
-                <input type="text" id="user-search" name="search" placeholder="Username…" value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" id="user-search" name="search" placeholder="Username…" value="<?php echo htmlspecialchars($search); ?>" enterkeyhint="search">
             </div>
+            <div class="m-collapsible m-filter-more" id="filter-settings-users">
             <div class="field">
                 <label for="user-role">Peran akses</label>
                 <select id="user-role" name="role">
@@ -234,6 +240,7 @@ include __DIR__ . '/includes/header.php';
             <div class="filter-grid-actions">
                 <?= filter_reset_link('settings.php') ?>
             </div>
+            </div>
         </div>
     </form>
 </div>
@@ -243,7 +250,7 @@ include __DIR__ . '/includes/header.php';
     <h2 class="table-title">Daftar Pengguna Sistem (<?php echo count($users); ?>)</h2>
     <a class="btn" href="add_user.php">Tambah Pengguna</a>
   </div>
-  <div class="table-scroll-wrap table-cards-mobile">
+  <div class="table-scroll-wrap">
   <table class="modern-table">
     <thead>
       <tr>
@@ -266,6 +273,11 @@ include __DIR__ . '/includes/header.php';
                   </div>
                   <strong><?php echo htmlspecialchars($u['username']); ?></strong>
                 </div>
+                <span class="m-collapsed-extra">
+                  <span class="badge <?php echo $u['role'] === 'admin' ? 'blue' : 'gray'; ?>">
+                    <?php echo htmlspecialchars(ucfirst($u['role'])); ?>
+                  </span>
+                </span>
               </td>
               <td data-label="Role">
                 <span class="badge <?php echo $u['role'] === 'admin' ? 'blue' : 'gray'; ?>">
@@ -281,7 +293,7 @@ include __DIR__ . '/includes/header.php';
                 <div class="action-buttons">
                   <a class="btn btn-sm secondary" href="edit_user.php?id=<?php echo (int)$u['id']; ?>">Edit</a>
                   <?php if ((int)$u['id'] !== (int)(current_user()['id'] ?? 0)): ?>
-                  <form method="POST" onsubmit="return confirm('Anda yakin ingin menghapus pengguna ini secara permanen?');" class="inline">
+                  <form method="POST" onsubmit="return mConfirmSubmit(event, this, 'Anda yakin ingin menghapus pengguna ini secara permanen?', 'Hapus');" class="inline">
                       <input type="hidden" name="action" value="delete_user">
                       <input type="hidden" name="id" value="<?php echo (int)$u['id']; ?>">
                       <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(csrf_token()); ?>">
